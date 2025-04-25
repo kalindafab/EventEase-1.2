@@ -57,6 +57,8 @@ const DashboardSidebar = () => {
     { icon: <Bookmark className="h-5 w-5" />, text: 'Saved Events', to: '/dashboard/saved' },
     { icon: <Users className="h-5 w-5" />, text: 'Attendees', to: '/dashboard/attendees' },
     { icon: <MessageSquare className="h-5 w-5" />, text: 'Messages', to: '/dashboard/messages' },
+    { icon: <MessageSquare className="h-5 w-5" />, text: 'Messages', to: '/dashboard/messages' },
+    { icon: <MessageSquare className="h-5 w-5" />, text: 'Messages', to: '/dashboard/messages' },
     { icon: <Settings className="h-5 w-5" />, text: 'Settings', to: '/dashboard/settings' },
   ];
   
