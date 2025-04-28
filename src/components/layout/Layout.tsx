@@ -5,16 +5,16 @@ import Footer from './Footer';
 const Layout = () => {
   const location = useLocation();
 
-  
-  const showFooter = location.pathname !== '/Signup'; 
+  const showNavbar = location.pathname !== '/dashboard';
+  const showFooter = location.pathname !== '/signup'  && location.pathname !== '/Login';
 
   return (
     <div className="flex flex-col min-h-screen">
-      <Navbar />
+      {showNavbar && <Navbar />}
       <main className="flex-grow">
         <Outlet />
       </main>
-      {showFooter && <Footer />} 
+      {showFooter && <Footer />}
     </div>
   );
 };
