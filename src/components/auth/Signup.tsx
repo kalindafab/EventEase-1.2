@@ -40,7 +40,7 @@ const Signup = () => {
           value={firstName}
           onChange={(e) => setFirstName(e.target.value)}
           placeholder="First Name"
-          className="border rounded p-2 w-1/2"
+          className="border rounded p-2 w-1/2 focus:outline-indigo-600"
           required
         />
         <input
@@ -48,7 +48,7 @@ const Signup = () => {
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
           placeholder="Last Name"
-          className="border rounded p-2 w-1/2"
+          className="border rounded p-2 w-1/2 focus:outline-indigo-600"
           required
         />
       </div>
@@ -57,14 +57,15 @@ const Signup = () => {
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="Email"
-        className="border rounded p-2 w-full"
+        className="border rounded p-2 w-full focus:outline-indigo-600"
         required
+        autoComplete="email"
       />
       <PasswordMatchInput ref={passwordInputRef} />
       <select
         value={role}
         onChange={(e) => setRole(e.target.value)}
-        className="border rounded p-2 w-full"
+        className="border rounded p-2 w-full focus:outline-indigo-600"
         required
       >
         <option value="">Select role</option>
@@ -77,7 +78,7 @@ const Signup = () => {
           value={organizationName}
           onChange={(e) => setOrganizationName(e.target.value)}
           placeholder="Organization Name"
-          className="border rounded p-2 w-full"
+          className="border rounded p-2 w-full focus:outline-indigo-600"
           required
         />
       )}
