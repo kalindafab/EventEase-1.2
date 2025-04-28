@@ -80,7 +80,7 @@ const EventCard = ({ event, index }: EventCardProps) => {
                   {event.attendees} attending
                 </div>
                 <div className="text-primary-600 font-semibold">
-                  {event.price === 0 ? 'Free' : `$${event.price}`}
+                  {event.price === 0 ? 'Free' : `Frw ${event.price}`}
                 </div>
               </div>
             </div>

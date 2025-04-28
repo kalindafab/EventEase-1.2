@@ -4,6 +4,8 @@ import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import EventDetailsPage from './pages/EventDetailsPage';
 import DashboardPage from './pages/DashboardPage';
+import Signup from './components/auth/Signup';
+import Login from './components/auth/Login';
 
 function App() {
   const location = useLocation();
@@ -15,6 +17,8 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="event/:id" element={<EventDetailsPage />} />
           <Route path="dashboard" element={<DashboardPage />} />
+          <Route path="/Signup" element={<Signup />} />
+          <Route path="/Login" element={<Login />} />
         </Route>
       </Routes>
     </AnimatePresence>

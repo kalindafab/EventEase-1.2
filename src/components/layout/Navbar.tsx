@@ -47,10 +47,13 @@ const Navbar = () => {
             >
               Dashboard
             </Link>
-            <button className="btn-primary">
-              <User className="h-4 w-4 mr-2" />
-              Sign In
-            </button>
+            <Link 
+                 to="/Signup" 
+                   className="btn-primary flex items-center justify-center gap-2"
+                       >
+                       <User className="h-4 w-4" />
+                   Sign Up
+            </Link>
           </nav>
           
           {/* Mobile Menu Button */}
