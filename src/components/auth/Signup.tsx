@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import PasswordMatchInput, { PasswordMatchInputRef } from './PasswordMatchInput';
 import { Link } from 'react-router-dom';
+import image from '../../../public/favicon.svg';
 
 const Signup = () => {
   const [firstName, setFirstName] = useState('');
@@ -31,6 +32,7 @@ const Signup = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
     <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
+      <img alt="Your Company" src={image} className="mx-auto h-10 w-auto" />
       <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
     <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mx-auto p-4">
     
