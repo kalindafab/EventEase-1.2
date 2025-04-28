@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  const navigate = useNavigate();
+
+  //to dempostrate the login functionality, we will just log the email and password to the console.
+  const handlesignin = () => {
+    navigate("/otpchecking");
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,7 +33,7 @@ const Login = () => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:outline-indigo-600"
             required
           />
           
@@ -36,7 +43,7 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Password"
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-full focus:outline-indigo-600"
             required
           />
           
@@ -44,6 +51,7 @@ const Login = () => {
           <button
             type="submit"
             className="btn-primary flex items-center justify-center gap-2 w-full py-2 rounded mt-4"
+            onClick={handlesignin}
           >
             Login
           </button>
