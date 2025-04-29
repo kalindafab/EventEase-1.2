@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Bell, Search, Menu, X, User } from 'lucide-react';
+import { Bell, Search, Menu, X, User, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface DashboardHeaderProps {

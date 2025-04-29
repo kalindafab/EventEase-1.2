@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import image from '../../../public/favicon.svg';
 
 const Signup = () => {
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -16,17 +18,38 @@ const Signup = () => {
     e.preventDefault();
     const passwords = passwordInputRef.current?.getPasswords();
     
-    console.log({
-      firstName,
-      lastName,
-      email,
-      password: passwords?.password,
-      confirmPassword: passwords?.confirmPassword,
-      role,
-      organizationName: role === 'manager' ? organizationName : null,
-    });
-
-    // Here you can validate or send to API
+    fetch('http://localhost:5297/api/users/register', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        email,
+        password: passwords?.password,
+        confirmPassword: passwords?.confirmPassword,
+        role,
+        organization: role === 'manager' ? organizationName : null,
+        status: role === 'manager' ? 'pending' : 'approved'
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Registration failed');
+        return res.json();
+      })
+      .then((data) => {
+        console.log('User registered:', data);
+        setMessage('Registration successful!');
+        setMessageType('success');
+        
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        setMessage('Registration failed. Please try again.');
+        setMessageType('error');
+      });
+    
   };
 
   return (
@@ -34,6 +57,16 @@ const Signup = () => {
     <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
       <img alt="Your Company" src={image} className="mx-auto h-10 w-auto" />
       <h2 className="text-2xl font-semibold text-center mb-6">Sign Up</h2>
+
+      {message && (
+  <div
+    className={`p-3 rounded text-sm text-center mb-4 ${
+      messageType === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+    }`}
+  >
+    {message}
+  </div>
+)}
     <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mx-auto p-4">
     
       <div className="flex gap-2">
