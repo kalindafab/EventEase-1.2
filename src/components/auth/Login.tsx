@@ -12,6 +12,8 @@ const Login = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setMessage('');
+    setMessageType('');
 
     try {
       const res = await fetch('http://localhost:5297/api/users/login', {
@@ -26,12 +28,12 @@ const Login = () => {
 
       const data = await res.json();
       console.log('Login successful:', data);
-      setMessage('Login successful!');
+      setMessage(data.message || 'OTP sent to your email.');
       setMessageType('success');
 
       // Redirect after short delay to OTP screen
       setTimeout(() => {
-        navigate('/otpchecking');
+        navigate('/otpchecking', { state: { email } });
       }, 1000);
 
     } catch (err: any) {
