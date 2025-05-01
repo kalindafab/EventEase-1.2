@@ -1,19 +1,22 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import image from '../../../public/favicon.svg';
+import { useAuth } from '../../contexts/AuthContext';
+import image from '../../assets/favicon.svg';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
-
+  const [isLoading, setIsLoading] = useState(false);
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage('');
     setMessageType('');
+    setIsLoading(true);
 
     try {
       const res = await fetch('http://localhost:5297/api/users/login', {
@@ -23,83 +26,161 @@ const Login = () => {
       });
 
       if (!res.ok) {
-        throw new Error('Invalid email or password');
+        const errorData = await res.json();
+        throw new Error(errorData.message || 'Invalid email or password');
       }
 
       const data = await res.json();
-      console.log('Login successful:', data);
-      setMessage(data.message || 'OTP sent to your email.');
+      const authToken = res.headers.get('Authorization')?.split(' ')[1] || data.token;
+
+      if (!authToken) {
+        throw new Error('Authentication token not received');
+      }
+
+      const userData = {
+        id: data.id,
+        firstname: data.firstname,
+        lastname: data.lastname,
+        email: data.email,
+        role: data.role.toLowerCase(),
+        status: data.status,
+        permissions: data.permissions || [],
+        accessToken: authToken,
+        refreshToken: data.refreshToken,
+        tokenExpiresAt: data.expiresAt,
+        avatar: data.avatar
+      };
+
+      login(userData, authToken);
+      
+      setMessage(data.message || 'Login successful');
       setMessageType('success');
 
-      // Redirect after short delay to OTP screen
+      // Redirect based on whether OTP is required
       setTimeout(() => {
-        navigate('/otpchecking', { state: { email } });
+        navigate(data.requiresOtp ? '/otpchecking' : '/dashboard', { 
+          state: { email } 
+        });
       }, 1000);
 
     } catch (err: any) {
-      console.error(err);
+      console.error('Login error:', err);
       setMessage(err.message || 'Login failed. Please try again.');
       setMessageType('error');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md p-6 bg-white rounded-lg shadow-lg">
-        <img alt="Your Company" src={image} className="mx-auto h-10 w-auto" />
-        <h2 className="text-2xl font-semibold text-center mb-6">Login</h2>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
+        <div className="flex flex-col items-center mb-8">
+          <img 
+            src={image} 
+            alt="Company Logo" 
+            className="h-12 w-auto mb-4"
+            loading="lazy"
+          />
+          <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
+          <p className="text-gray-600">Sign in to your account</p>
+        </div>
 
         {message && (
           <div
-            className={`p-3 rounded text-sm text-center mb-4 ${
+            className={`mb-6 p-3 rounded-md text-center ${
               messageType === 'success'
-                ? 'bg-green-100 text-green-800'
-                : 'bg-red-100 text-red-800'
+                ? 'bg-green-50 text-green-800'
+                : 'bg-red-50 text-red-800'
             }`}
           >
             {message}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4 w-full max-w-md mx-auto p-4">
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Email"
-            className="border rounded p-2 w-full focus:outline-indigo-600"
-            required
-          />
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email Address
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="your@email.com"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
+              autoComplete="username"
+            />
+          </div>
 
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Password"
-            className="border rounded p-2 w-full focus:outline-indigo-600"
-            required
-          />
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
+              autoComplete="current-password"
+              minLength={5}
+            />
+          </div>
 
-          <button
-            type="submit"
-            className="btn-primary flex items-center justify-center gap-2 w-full py-2 rounded mt-4"
-          >
-            Login
-          </button>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                id="remember-me"
+                name="remember-me"
+                type="checkbox"
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              />
+              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+                Remember me
+              </label>
+            </div>
 
-          <div className="text-right text-sm mt-2">
-            <Link to="/forgot-password" className="text-blue-500 hover:underline">
+            <Link 
+              to="/forgot-password" 
+              className="text-sm text-indigo-600 hover:text-indigo-500"
+            >
               Forgot password?
             </Link>
           </div>
 
-          <div className="text-center text-sm mt-4">
-            <span className="text-gray-600">Don't have an account? </span>
-            <Link to="/signup" className="text-blue-500 hover:underline font-medium">
-              Sign Up
-            </Link>
-          </div>
+          <button
+            type="submit"
+            disabled={isLoading}
+            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+              isLoading ? 'opacity-75 cursor-not-allowed' : ''
+            }`}
+          >
+            {isLoading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing in...
+              </>
+            ) : 'Sign in'}
+          </button>
         </form>
+
+        <div className="mt-6 text-center text-sm">
+          <span className="text-gray-600">Don't have an account? </span>
+          <Link 
+            to="/signup" 
+            className="font-medium text-indigo-600 hover:text-indigo-500"
+          >
+            Sign up
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import PasswordMatchInput, { PasswordMatchInputRef } from './PasswordMatchInput';
 import { Link } from 'react-router-dom';
-import image from '../../../public/favicon.svg';
+import image from '../../assets/favicon.svg';
 
 const Signup = () => {
   const [message, setMessage] = useState('');
