@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
 import image from '../../assets/favicon.svg';
 
 const Login = () => {
@@ -9,7 +8,6 @@ const Login = () => {
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | ''>('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -19,7 +17,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5297/api/users/login', {
+      const res = await fetch('http://localhost:5297/api/Users/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -30,37 +28,13 @@ const Login = () => {
         throw new Error(errorData.message || 'Invalid email or password');
       }
 
-      const data = await res.json();
-      const authToken = res.headers.get('Authorization')?.split(' ')[1] || data.token;
+      await res.json(); // We assume success — no need to use this response now.
 
-      if (!authToken) {
-        throw new Error('Authentication token not received');
-      }
-
-      const userData = {
-        id: data.id,
-        firstname: data.firstname,
-        lastname: data.lastname,
-        email: data.email,
-        role: data.role.toLowerCase(),
-        status: data.status,
-        permissions: data.permissions || [],
-        accessToken: authToken,
-        refreshToken: data.refreshToken,
-        tokenExpiresAt: data.expiresAt,
-        avatar: data.avatar
-      };
-
-      login(userData, authToken);
-      
-      setMessage(data.message || 'Login successful');
+      setMessage('OTP sent to your email');
       setMessageType('success');
 
-      // Redirect based on whether OTP is required
       setTimeout(() => {
-        navigate(data.requiresOtp ? '/otpchecking' : '/dashboard', { 
-          state: { email } 
-        });
+        navigate('/otpchecking', { state: { email } });
       }, 1000);
 
     } catch (err: any) {
@@ -76,24 +50,15 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
         <div className="flex flex-col items-center mb-8">
-          <img 
-            src={image} 
-            alt="Company Logo" 
-            className="h-12 w-auto mb-4"
-            loading="lazy"
-          />
+          <img src={image} alt="Company Logo" className="h-12 w-auto mb-4" loading="lazy" />
           <h2 className="text-2xl font-bold text-gray-800">Welcome Back</h2>
           <p className="text-gray-600">Sign in to your account</p>
         </div>
 
         {message && (
-          <div
-            className={`mb-6 p-3 rounded-md text-center ${
-              messageType === 'success'
-                ? 'bg-green-50 text-green-800'
-                : 'bg-red-50 text-red-800'
-            }`}
-          >
+          <div className={`mb-6 p-3 rounded-md text-center ${
+            messageType === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+          }`}>
             {message}
           </div>
         )}
@@ -109,7 +74,7 @@ const Login = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required
               autoComplete="username"
             />
@@ -125,7 +90,7 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required
               autoComplete="current-password"
               minLength={5}
@@ -136,19 +101,14 @@ const Login = () => {
             <div className="flex items-center">
               <input
                 id="remember-me"
-                name="remember-me"
                 type="checkbox"
                 className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
               />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+              <label htmlFor="remember-me" className="ml-2 text-sm text-gray-700">
                 Remember me
               </label>
             </div>
-
-            <Link 
-              to="/forgot-password" 
-              className="text-sm text-indigo-600 hover:text-indigo-500"
-            >
+            <Link to="/forgot-password" className="text-sm text-indigo-600 hover:text-indigo-500">
               Forgot password?
             </Link>
           </div>
@@ -156,7 +116,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
+            className={`w-full flex justify-center py-2 px-4 rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
               isLoading ? 'opacity-75 cursor-not-allowed' : ''
             }`}
           >
@@ -174,10 +134,7 @@ const Login = () => {
 
         <div className="mt-6 text-center text-sm">
           <span className="text-gray-600">Don't have an account? </span>
-          <Link 
-            to="/signup" 
-            className="font-medium text-indigo-600 hover:text-indigo-500"
-          >
+          <Link to="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
             Sign up
           </Link>
         </div>
