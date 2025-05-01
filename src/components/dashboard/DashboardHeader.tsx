@@ -134,12 +134,12 @@ const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: DashboardHeaderProps)
           >
             <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center mr-2 overflow-hidden">
               <img 
-                src="https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
+                src="/assets/user.png" 
                 alt="User"
                 className="h-full w-full object-cover"
               />
             </div>
-            <span className="font-medium text-gray-700 hidden md:block">Luvumbu Nzinga</span>
+          
           </button>
           
           <AnimatePresence>
