@@ -1,5 +1,5 @@
 export type UserRole = 'admin' | 'manager' | 'client'; 
-export type UserStatus = 'approved' | 'pending' | 'rejected'|'locked';
+export type UserStatus = 'approved' | 'pending' |'locked';
 
 export interface User {
     id: string;
@@ -7,7 +7,7 @@ export interface User {
     lastname: string;
     email: string;
     role: 'admin' | 'manager' | 'client';
-    status: 'active' | 'locked' | 'pending';
+    status:UserStatus;
     permissions: string[];
     organization?: string; // Optional for managers
     createdAt: Date;

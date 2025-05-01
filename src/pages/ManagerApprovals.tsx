@@ -13,11 +13,17 @@ const ManagerApprovals = () => {
   const [managers, setManagers] = useState<PendingManager[]>([]);
   const [loading, setLoading] = useState(true);
   const { user: currentUser } = useAuth();
+  
 
   useEffect(() => {
     const fetchPendingManagers = async () => {
       try {
-        const response = await fetch('/api/admin/pending-managers');
+        const response = await fetch('http://localhost:5297/api/admin/users', {
+          });
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+  
         const data = await response.json();
         setManagers(data.filter((m: PendingManager) => m.status === 'pending'));
       } catch (error) {
@@ -32,11 +38,8 @@ const ManagerApprovals = () => {
 
   const handleDecision = async (managerId: string, approved: boolean) => {
     try {
-      await fetch(`/api/admin/managers/${managerId}/status`, {
+      await fetch(`http://localhost:5297/api/admin/managers/${managerId}/status`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ status: approved ? 'approved' : 'rejected' })
       });
       
