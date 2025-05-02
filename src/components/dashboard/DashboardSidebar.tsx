@@ -12,6 +12,8 @@ import {
 } from 'lucide-react';
 
 interface SidebarItemProps {
+  // Updated styles for light and dark mode
+
   icon: React.ReactNode;
   text: string;
   to: string;

@@ -2,13 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+.dark {
+  color-scheme: dark;
+}
+
 @layer base {
   html {
-    @apply scroll-smooth;
+    @apply transition-colors duration-200;
   }
   
   body {
-    @apply bg-background-light text-text-primary font-sans;
+    
+    
   }
   
   h1, h2, h3, h4, h5, h6 {

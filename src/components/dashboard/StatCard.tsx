@@ -15,7 +15,7 @@ interface StatCardProps {
 const StatCard = ({ title, value, icon, change, bgColor, textColor }: StatCardProps) => {
   return (
     <motion.div 
-      className={`${bgColor} ${textColor} rounded-xl p-6 shadow-sm`}
+      className={`${bgColor} dark:bg-gray-800 ${textColor} dark:text-white rounded-xl p-6 shadow-sm`}
       whileHover={{ y: -5, boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
     >

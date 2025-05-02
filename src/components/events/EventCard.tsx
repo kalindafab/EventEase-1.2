@@ -62,11 +62,14 @@ const EventCard = ({ event, index }: EventCardProps) => {
             <div className="border-t border-gray-100 pt-4 mt-auto">
               <div className="flex items-center text-sm text-gray-500 mb-2">
                 <Calendar className="h-4 w-4 mr-2 text-primary-500" />
-                {new Date(event.date).toLocaleDateString('en-US', { 
-                  month: 'short',
-                  day: 'numeric', 
-                  year: 'numeric' 
-                })}
+                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-card h-full flex flex-col transition-all duration-300">
+                  <h3 className="text-xl font-semibold mb-2 line-clamp-2 text-gray-900 dark:text-white">
+                  {event.title}
+                  </h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">
+                    {event.shortDescription}
+                    </p>
+                </div>
               </div>
               
               <div className="flex items-center text-sm text-gray-500 mb-2">
