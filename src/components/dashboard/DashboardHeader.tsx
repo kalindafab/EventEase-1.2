@@ -9,6 +9,7 @@ interface DashboardHeaderProps {
   searchTerm?: string;
   handleSearchChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  
 }
 
 const DashboardHeader = ({ 
