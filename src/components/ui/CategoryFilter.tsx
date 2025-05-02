@@ -5,23 +5,23 @@ interface CategoryFilterProps {
   categories: string[];
   activeCategory: string;
   onCategoryChange: (category: string) => void;
+  t: (key: string) => string;
 }
 
-const CategoryFilter = ({ 
-  categories, 
-  activeCategory, 
-  onCategoryChange 
+const CategoryFilter = ({
+  categories,
+  activeCategory,
+  onCategoryChange
 }: CategoryFilterProps) => {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
   return (
     <div className="flex flex-wrap gap-2 mb-8">
       <button
-        className={`relative px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-          activeCategory === 'All' 
-            ? 'text-white' 
+        className={`relative px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === 'All'
+            ? 'text-white'
             : 'text-gray-700 hover:text-primary-600'
-        }`}
+          }`}
         onClick={() => onCategoryChange('All')}
         onMouseEnter={() => setHoveredCategory('All')}
         onMouseLeave={() => setHoveredCategory(null)}
@@ -45,15 +45,14 @@ const CategoryFilter = ({
         )}
         <span className="relative z-10">All</span>
       </button>
-      
+
       {categories.map((category) => (
         <button
           key={category}
-          className={`relative px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-            activeCategory === category 
-              ? 'text-white' 
+          className={`relative px-4 py-2 rounded-full text-sm font-medium transition-colors ${activeCategory === category
+              ? 'text-white'
               : 'text-gray-700 hover:text-primary-600'
-          }`}
+            }`}
           onClick={() => onCategoryChange(category)}
           onMouseEnter={() => setHoveredCategory(category)}
           onMouseLeave={() => setHoveredCategory(null)}
