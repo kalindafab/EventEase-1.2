@@ -25,9 +25,11 @@ const DashboardPage = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Check if we're on a nested route (users/approvals)
+  // Include createEvents in the nested route check
   const isNestedRoute = location.pathname.includes('/dashboard/users') || 
-                       location.pathname.includes('/dashboard/approvals');
+                       location.pathname.includes('/dashboard/approvals') ||
+                       location.pathname.includes('/dashboard/createEvents') ||
+                       location.pathname.includes('/dashboard/attendees');
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -60,7 +62,7 @@ const DashboardPage = () => {
         
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {isNestedRoute ? (
-            // Render nested routes (UserManagement/ManagerApprovals)
+            // Render nested routes (UserManagement/ManagerApprovals/CreateEventPage)
             <Outlet />
           ) : (
             // Render default dashboard content

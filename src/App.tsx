@@ -10,6 +10,8 @@ import Otpcheck from './components/auth/Otpcheck';
 import { AuthProvider } from './contexts/AuthContext';
 import UserManagement from './pages/UserManagement';
 import ManagerApprovals from './pages/ManagerApprovals';
+import CreateEventPage from './pages/CreateEventPage';
+import AttendeesPage from './pages/AttendeesPage';
 
 function App() {
   const location = useLocation();
@@ -33,6 +35,9 @@ function App() {
               {/* Admin sections */}
               <Route path="users" element={<UserManagement />} />
               <Route path="approvals" element={<ManagerApprovals />} />
+              {/* manager sections */}
+              <Route path="createEvents" element={<CreateEventPage />} />
+              <Route path="attendees" element={<AttendeesPage />} />
               
               {/* Your other existing dashboard routes would go here */}
             </Route>
@@ -40,6 +45,7 @@ function App() {
         </Routes>
       </AnimatePresence>
     </AuthProvider>
+    
   );
 }
 

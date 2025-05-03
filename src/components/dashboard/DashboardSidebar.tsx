@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -8,43 +8,52 @@ import {
   LogOut,
   PlusCircle,
   Bookmark,
-  MessageSquare,
   UserCog,
   ShieldQuestion
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
 interface SidebarItemProps {
   icon: React.ReactNode;
   text: string;
   to: string;
   isActive: boolean;
+  onClick?: () => void;
 }
 
-const SidebarItem = ({ icon, text, to, isActive }: SidebarItemProps) => {
-  return (
+const SidebarItem = ({ icon, text, to, isActive, onClick }: SidebarItemProps) => {
+  const content = (
+    <motion.div 
+      className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
+        isActive 
+          ? 'bg-primary-100 text-primary-700' 
+          : 'text-gray-600 hover:bg-gray-100'
+      }`}
+      whileHover={{ x: 4 }}
+      whileTap={{ scale: 0.95 }}
+    >
+      <div className="mr-3">
+        {icon}
+      </div>
+      <span className="font-medium">{text}</span>
+      {isActive && (
+        <motion.div 
+          className="ml-auto w-1.5 h-5 bg-primary-500 rounded-full"
+          layoutId="sidebar-indicator"
+          transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+        />
+      )}
+    </motion.div>
+  );
+
+  return to === '/logout' ? (
+    <button onClick={onClick} className="block w-full text-left">
+      {content}
+    </button>
+  ) : (
     <Link to={to} className="block">
-      <motion.div 
-        className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
-          isActive 
-            ? 'bg-primary-100 text-primary-700' 
-            : 'text-gray-600 hover:bg-gray-100'
-        }`}
-        whileHover={{ x: 4 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <div className="mr-3">
-          {icon}
-        </div>
-        <span className="font-medium">{text}</span>
-        {isActive && (
-          <motion.div 
-            className="ml-auto w-1.5 h-5 bg-primary-500 rounded-full"
-            layoutId="sidebar-indicator"
-            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-          />
-        )}
-      </motion.div>
+      {content}
     </Link>
   );
 };
@@ -54,12 +63,36 @@ interface NavItem {
   text: string;
   to: string;
   permission?: string;
-  role?: 'admin' | 'manager' | 'client'; // Explicit role restriction
+  role?: 'admin' | 'manager' | 'client';
 }
 
 const DashboardSidebar = () => {
   const location = useLocation();
-  const { user, hasPermission } = useAuth();
+  const navigate = useNavigate();
+  const { user, hasPermission, logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://localhost:5297/api/users/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Logout failed');
+      }
+
+      logout();
+      localStorage.removeItem('token');
+      navigate('/login');
+      toast.success('Logged out successfully');
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : 'Logout failed');
+    }
+  };
 
   const navItems: NavItem[] = [
     // Common items for all roles
@@ -96,14 +129,14 @@ const DashboardSidebar = () => {
     { 
       icon: <PlusCircle className="h-5 w-5" />, 
       text: 'Create Event', 
-      to: '/dashboard/events/create',
+      to: '/dashboard/createEvents',
       permission: 'CanCreateEvents',
       role: 'manager'
     },
     { 
       icon: <Users className="h-5 w-5" />, 
       text: 'Attendees', 
-      to: '/dashboard/events/attendees',
+      to: '/dashboard/attendees',
       permission: 'CanViewTicketSales',
       role: 'manager'
     },
@@ -141,22 +174,9 @@ const DashboardSidebar = () => {
   ];
 
   const filteredItems = navItems.filter(item => {
-    // Check permission first
     const hasPerm = item.permission ? hasPermission(item.permission) : true;
-    
-   
-    const roleAllowed = item.role 
-      ? user?.role === item.role
-      : true; 
-    
+    const roleAllowed = item.role ? user?.role === item.role : true;
     return hasPerm && roleAllowed;
-  });
-
-
-  console.log('Rendering sidebar for:', {
-    role: user?.role,
-    permissions: user?.permissions,
-    visibleItems: filteredItems.map(i => i.text)
   });
 
   return (
@@ -177,6 +197,7 @@ const DashboardSidebar = () => {
               text={item.text}
               to={item.to}
               isActive={location.pathname.startsWith(item.to)}
+              onClick={item.to === '/logout' ? handleLogout : undefined}
             />
           ))}
         </nav>
