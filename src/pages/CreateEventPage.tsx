@@ -140,7 +140,7 @@ const CreateEventPage = () => {
         token,
       });
       alert('Event created successfully!');
-     
+      navigate(`/event/${createdEvent.id}`);
     } catch (error) {
       let errorMessage = 'Failed to create event';
       if (error instanceof Error) {
