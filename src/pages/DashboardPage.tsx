@@ -26,6 +26,7 @@ const DashboardPage = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -47,7 +48,9 @@ const DashboardPage = () => {
 
   // Check if we're on a nested route (users/approvals)
   const isNestedRoute = location.pathname.includes('/dashboard/users') || 
-                       location.pathname.includes('/dashboard/approvals');
+                       location.pathname.includes('/dashboard/approvals') ||
+                       location.pathname.includes('/dashboard/createEvents') ||
+                       location.pathname.includes('/dashboard/attendees');
 
   // Show search results or default content
   const showSearchResults = searchTerm.trim() && !isNestedRoute;
