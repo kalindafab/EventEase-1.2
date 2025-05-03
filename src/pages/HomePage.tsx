@@ -65,16 +65,16 @@ const HomePage = () => {
   };
   
   return (
-    <div>
+    <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
       {/* Hero Section */}
-      <section className="relative bg-primary-900 text-white overflow-hidden">
+      <section className="relative bg-primary-900 dark:bg-gray-800 text-white overflow-hidden">
         <div className="absolute inset-0 opacity-20">
           <img 
             src="https://images.pexels.com/photos/2263436/pexels-photo-2263436.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
             alt="Background" 
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-primary-900/95"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-primary-900/80 to-primary-900/95 dark:from-gray-900/90 dark:to-gray-900"></div>
         </div>
         
         <div className="container-custom relative z-10 py-16 md:py-24">
@@ -111,9 +111,9 @@ const HomePage = () => {
       
       {/* Featured Event */}
       {featuredEvent && (
-        <section className="py-12 md:py-16 bg-gray-50">
+        <section className="py-12 md:py-16 bg-gray-50 dark:bg-gray-800">
           <div className="container-custom">
-            <div className="flex flex-col md:flex-row gap-8 overflow-hidden rounded-2xl bg-white shadow-lg">
+            <div className="flex flex-col md:flex-row gap-8 overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-lg">
               <motion.div 
                 className="md:w-1/2"
                 initial={{ opacity: 0, x: -50 }}
@@ -134,19 +134,19 @@ const HomePage = () => {
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
                 <div className="flex items-center mb-4">
-                  <span className="bg-primary-100 text-primary-700 px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                  <span className="bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 px-3 py-1 rounded-full text-sm font-medium flex items-center">
                     <Zap className="h-4 w-4 mr-1" />
                     Featured Event
                   </span>
                 </div>
                 
-                <h2 className="text-2xl md:text-3xl font-bold mb-4">{featuredEvent.title}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 dark:text-white">{featuredEvent.title}</h2>
                 
-                <p className="text-gray-600 mb-6">{featuredEvent.shortDescription}</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">{featuredEvent.shortDescription}</p>
                 
                 <div className="space-y-3 mb-6">
-                  <div className="flex items-center text-gray-600">
-                    <Calendar className="h-5 w-5 mr-3 text-primary-500" />
+                  <div className="flex items-center text-gray-600 dark:text-gray-300">
+                    <Calendar className="h-5 w-5 mr-3 text-primary-500 dark:text-primary-400" />
                     {new Date(featuredEvent.date).toLocaleDateString('en-US', { 
                       weekday: 'long',
                       month: 'long',
@@ -155,13 +155,13 @@ const HomePage = () => {
                     })}
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
-                    <MapPin className="h-5 w-5 mr-3 text-primary-500" />
+                  <div className="flex items-center text-gray-600 dark:text-gray-300">
+                    <MapPin className="h-5 w-5 mr-3 text-primary-500 dark:text-primary-400" />
                     {featuredEvent.location}
                   </div>
                   
-                  <div className="flex items-center text-gray-600">
-                    <Users className="h-5 w-5 mr-3 text-primary-500" />
+                  <div className="flex items-center text-gray-600 dark:text-gray-300">
+                    <Users className="h-5 w-5 mr-3 text-primary-500 dark:text-primary-400" />
                     {featuredEvent.attendees} people attending
                   </div>
                 </div>
@@ -186,15 +186,15 @@ const HomePage = () => {
       )}
       
       {/* Events Section */}
-      <section className="py-12 md:py-16">
+      <section className="py-12 md:py-16 dark:bg-gray-900">
         <div className="container-custom">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
             <div>
-              <h2 className="text-3xl font-bold mb-2">Upcoming Events</h2>
-              <p className="text-gray-600">Discover and book your next experience</p>
+              <h2 className="text-3xl font-bold mb-2 dark:text-white">Upcoming Events</h2>
+              <p className="text-gray-600 dark:text-gray-400">Discover and book your next experience</p>
             </div>
             
-            <Link to="/dashboard" className="text-primary-600 font-medium hover:text-primary-700 transition-colors mt-4 md:mt-0">
+            <Link to="/dashboard" className="text-primary-600 dark:text-primary-400 font-medium hover:text-primary-700 dark:hover:text-primary-300 transition-colors mt-4 md:mt-0">
               View All Events
             </Link>
           </div>
@@ -218,14 +218,14 @@ const HomePage = () => {
           
           {events.length === 0 && (
             <div className="text-center py-12">
-              <p className="text-gray-500 text-lg">No events found matching your criteria.</p>
+              <p className="text-gray-500 dark:text-gray-400 text-lg">No events found matching your criteria.</p>
             </div>
           )}
         </div>
       </section>
       
       {/* CTA Section */}
-      <section className="py-12 md:py-20 bg-primary-50">
+      <section className="py-12 md:py-20 bg-primary-50 dark:bg-gray-800">
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -234,8 +234,8 @@ const HomePage = () => {
             viewport={{ once: true }}
             className="max-w-3xl mx-auto"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Create Your Own Event?</h2>
-            <p className="text-lg text-gray-600 mb-8">
+            <h2 className="text-3xl md:text-4xl font-bold mb-6 dark:text-white">Ready to Create Your Own Event?</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300 mb-8">
               Share your passion, build a community, and create unforgettable experiences.
             </p>
             <motion.div
