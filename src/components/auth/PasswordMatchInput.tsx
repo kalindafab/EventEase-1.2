@@ -30,7 +30,7 @@ const PasswordMatchInput = forwardRef<PasswordMatchInputRef>((_, ref) => {
     <div className="space-y-4">
       {/* Password Field */}
       <div
-        className="relative border rounded p-2 h-10 flex items-center cursor-text"
+        className="relative border dark:border-gray-600 rounded p-2 h-10 flex items-center cursor-text bg-white dark:bg-gray-700"
         onClick={() => passwordRef.current?.focus()}
       >
         <input
@@ -50,18 +50,18 @@ const PasswordMatchInput = forwardRef<PasswordMatchInputRef>((_, ref) => {
                 key={index}
                 className={`w-2 h-2 rounded-full mx-1 
                   ${isMatch === true ? 'bg-green-500' : 
-                    isMatch === false ? 'bg-red-500' : 'bg-black'}`}
+                    isMatch === false ? 'bg-red-500' : 'bg-black dark:bg-white'}`}
               />
             ))
           ) : (
-            <span className="text-gray-400">Enter password</span>
+            <span className="text-gray-400 dark:text-gray-300">Enter password</span>
           )}
         </div>
       </div>
 
       {/* Confirm Password Field */}
       <div
-        className="relative border rounded p-2 h-10 flex items-center cursor-text"
+        className="relative border dark:border-gray-600 rounded p-2 h-10 flex items-center cursor-text bg-white dark:bg-gray-700"
         onClick={() => confirmRef.current?.focus()}
       >
         <input
@@ -77,10 +77,10 @@ const PasswordMatchInput = forwardRef<PasswordMatchInputRef>((_, ref) => {
         <div className="flex items-center">
           {(confirmPassword.length > 0 || confirmFocused) ? (
             confirmPassword.split('').map((_, index) => (
-              <div key={index} className="w-2 h-2 rounded-full mx-1 bg-black" />
+              <div key={index} className="w-2 h-2 rounded-full mx-1 bg-black dark:bg-white" />
             ))
           ) : (
-            <span className="text-gray-400">Confirm password</span>
+            <span className="text-gray-400 dark:text-gray-300">Confirm password</span>
           )}
         </div>
       </div>
