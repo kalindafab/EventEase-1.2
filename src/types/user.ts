@@ -12,6 +12,8 @@ export interface User {
     organization?: string; // Optional for managers
     createdAt: Date;
     updatedAt: Date;
+    token:string
+    
   }
   
   // Optional: Different DTOs if needed

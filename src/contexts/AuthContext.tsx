@@ -7,6 +7,7 @@ type User = {
   lastname: string;
   email: string;
   role: UserRole;
+  organization:string
   status: UserStatus;
   permissions: string[];
   accessToken?: string;
