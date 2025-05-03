@@ -1,7 +1,3 @@
-// src/services/eventService.ts
-
-import { useAuth } from "../contexts/AuthContext";
-
 interface TicketTypeDto {
     name: string;
     price: number;
