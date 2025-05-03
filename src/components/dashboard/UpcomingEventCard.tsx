@@ -49,7 +49,7 @@ const UpcomingEventCard = ({ event }: UpcomingEventCardProps) => {
             {event.attendees}
           </div>
           <span className="text-primary-600 font-semibold">
-            {event.price === 0 ? 'Free' : `$${event.price}`}
+            {event.price === 0 ? 'Free' : `Frw ${event.price}`}
           </span>
         </div>
       </div>

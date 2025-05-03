@@ -6,18 +6,21 @@ import {
   MapPin, Tag, Image as ImageIcon, BookOpen,
   Building2, Ticket, Plus, Trash2, ArrowLeft, XCircle
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 const CreateEventPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { user, token} = useAuth();
+  
   const categories = [
     'Music', 'Sports', 'Food & Drink', 'Arts', 
     'Business', 'Technology', 'Education', 'Other'
   ];
 
-  // Form state with corrected field names to match API
+  // Form state with corrected field names
   const [eventData, setEventData] = useState({
     name: '',
     description: '',
@@ -26,12 +29,12 @@ const CreateEventPage = () => {
     venue: '',
     category: '',
     image: null as File | null,
-    organizer: 'My Organization'
+    organizer: user?.lastname|| 'My Organization',
   });
 
   // Ticket types state with corrected field names
   const [ticketTypes, setTicketTypes] = useState([
-    { id: 1, name: 'General Admission', price: 0 }
+    { id: 1, name: 'VIP', price: 0 }
   ]);
 
   // Form handlers
@@ -88,28 +91,68 @@ const CreateEventPage = () => {
       ticket.price >= 0
     );
   };
+ 
 
   // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
+
+    if (!token) {
+      console.error("User is not authenticated");
+      return;
+    }
     
     try {
-      // Prepare ticket types for API
       const tickets = ticketTypes.map(({ name, price }) => ({ name, price }));
+      const requestData = {
+        eventData: {
+          ...eventData,
+          image: eventData.image || undefined
+        },
+        tickets,
+        token
+      };
+      console.log('Sending to API:', {
+        eventData: {
+          ...requestData.eventData,
+          image: requestData.eventData.image ? requestData.eventData.image.name : 'No image'
+        },
+        tickets: requestData.tickets,
+        token: 'Bearer ...' + token.slice(-4) // Log just the end of token for security
+      });
+  
       
-      // Call service to create event
       const createdEvent = await createEvent({
         ...eventData,
         image: eventData.image || undefined
-      }, tickets);
-      
+      }, tickets,token);
+     
+      console.log('API Response:', createdEvent);
+  
+      if (!createdEvent.id) {
+        throw new Error('Event was created but no ID was returned');
+      }
+      console.log('Submitting event with data:', {
+        eventData,
+        ticketTypes,
+        token,
+      });
       alert('Event created successfully!');
-      navigate(`/event/${createdEvent.id}`);
+     
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Failed to create event');
-      console.error('Creation error:', error);
+      let errorMessage = 'Failed to create event';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        // Handle specific error cases
+        if (error.message.includes('Failed to connect')) {
+          errorMessage = 'Cannot connect to server. Please check your internet connection.';
+        } else if (error.message.includes('Server responded')) {
+          errorMessage = `Server error: ${error.message}`;
+        }
+      }
+      setError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -148,7 +191,6 @@ const CreateEventPage = () => {
         <div className="flex mb-6">
           <div 
             className={`flex-1 border-b-2 pb-2 ${step === 1 ? 'border-primary-500' : 'border-gray-200'}`}
-            onClick={() => setStep(1)}
           >
             <div className={`flex items-center justify-center ${step === 1 ? 'text-primary-500' : 'text-gray-500'}`}>
               <span className={`flex items-center justify-center w-6 h-6 rounded-full mr-2 text-sm ${step === 1 ? 'bg-primary-100' : 'bg-gray-100'}`}>
@@ -159,7 +201,6 @@ const CreateEventPage = () => {
           </div>
           <div 
             className={`flex-1 border-b-2 pb-2 ${step === 2 ? 'border-primary-500' : 'border-gray-200'}`}
-            onClick={() => validateStep1() ? setStep(2) : null}
           >
             <div className={`flex items-center justify-center ${step === 2 ? 'text-primary-500' : 'text-gray-500'}`}>
               <span className={`flex items-center justify-center w-6 h-6 rounded-full mr-2 text-sm ${step === 2 ? 'bg-primary-100' : 'bg-gray-100'}`}>
@@ -347,11 +388,16 @@ const CreateEventPage = () => {
               <div className="mt-8 flex justify-end">
                 <motion.button
                   type="button"
-                  onClick={() => validateStep1() ? setStep(2) : null}
+                  onClick={() => {
+                    if (validateStep1()) {
+                      setStep(2);
+                    } else {
+                      setError('Please fill all required fields');
+                    }
+                  }}
                   className="btn-primary px-4 py-2 text-sm"
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  disabled={!validateStep1()}
                 >
                   Next: Ticket Types
                 </motion.button>
@@ -368,7 +414,7 @@ const CreateEventPage = () => {
             >
               <h2 className="text-lg font-bold mb-4">Ticket Types</h2>
               <p className="text-gray-600 text-sm mb-4">
-                Add different ticket types for your event (e.g., General Admission, VIP, Early Bird, etc.)
+                Add different ticket types for your event (e.g., Table of 8, VIP, Early Bird, etc.)
               </p>
 
               <div className="space-y-4">
@@ -394,7 +440,7 @@ const CreateEventPage = () => {
                       </div>
                       <div>
                         <label htmlFor={`ticket-price-${ticket.id}`} className="block text-sm font-medium text-gray-700 mb-1">
-                          Price ($)
+                          Price (Frw)
                         </label>
                         <div className="relative">
                           <input
@@ -403,12 +449,12 @@ const CreateEventPage = () => {
                             value={ticket.price}
                             onChange={(e) => handleTicketChange(ticket.id, 'price', e.target.value)}
                             min="0"
-                            step="0.01"
+                           
                             className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
-                            placeholder="0.00"
+                            
                             required
                           />
-                          <span className="absolute right-3 top-2 text-gray-500 text-sm">$</span>
+                          <span className="absolute right-3 top-2 text-gray-500 text-sm">Frw</span>
                         </div>
                       </div>
                     </div>
