@@ -50,7 +50,8 @@ const DashboardPage = () => {
   const isNestedRoute = location.pathname.includes('/dashboard/users') || 
                        location.pathname.includes('/dashboard/approvals') ||
                        location.pathname.includes('/dashboard/createEvents') ||
-                       location.pathname.includes('/dashboard/attendees');
+                       location.pathname.includes('/dashboard/attendees') ||
+                       location.pathname.includes('/dashboard/view-my-events');
 
   // Show search results or default content
   const showSearchResults = searchTerm.trim() && !isNestedRoute;

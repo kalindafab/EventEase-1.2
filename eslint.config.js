@@ -17,6 +17,19 @@ export default tseslint.config(
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,
     },
+
+    // add a rule to ignore error for "any" in the catch clause
+    rules: {
+      ...js.configs.recommended.rules,
+      'no-undef': 'off',
+      'no-unused-vars': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+      '@typescript-eslint/no-explicit-any': 'off',
+    },
+  
     rules: {
       ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
