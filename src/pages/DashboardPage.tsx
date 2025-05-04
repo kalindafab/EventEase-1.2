@@ -7,7 +7,8 @@ import {
   TrendingUp,
   ArrowUpRight, 
   ArrowDownRight,
-  ChevronRight
+  ChevronRight,
+  Search
 } from 'lucide-react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import DashboardSidebar from '../components/dashboard/DashboardSidebar';
@@ -18,19 +19,42 @@ import { eventsData } from '../data/eventsData';
 
 const DashboardPage = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const upcomingEvents = eventsData.slice(0, 3);
+  const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
   
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Include createEvents in the nested route check
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
+  };
+
+  const handleKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && searchTerm.trim()) {
+      // Search functionality is handled through the filtered content
+    }
+  };
+
+  // Filter content based on search term
+  const filteredEvents = eventsData.filter(event =>
+    event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    event.location.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const upcomingEvents = searchTerm ? filteredEvents.slice(0, 3) : eventsData.slice(0, 3);
+
+  // Check if we're on a nested route (users/approvals)
   const isNestedRoute = location.pathname.includes('/dashboard/users') || 
                        location.pathname.includes('/dashboard/approvals') ||
                        location.pathname.includes('/dashboard/createEvents') ||
                        location.pathname.includes('/dashboard/attendees') ||
                        location.pathname.includes('/dashboard/myEvents');
+
+  // Show search results or default content
+  const showSearchResults = searchTerm.trim() && !isNestedRoute;
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -59,14 +83,50 @@ const DashboardPage = () => {
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <DashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
+        <DashboardHeader 
+          toggleSidebar={toggleSidebar} 
+          isSidebarOpen={isSidebarOpen} 
+          searchTerm={searchTerm}
+          handleSearchChange={handleSearchChange}
+          handleKeyUp={handleKeyUp}
+        />
         
         <main className="flex-1 overflow-y-auto p-4 md:p-6">
           {isNestedRoute ? (
-            // Render nested routes (UserManagement/ManagerApprovals/CreateEventPage)
             <Outlet />
+          ) : showSearchResults ? (
+            // Search Results View
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold">
+                  Search Results for "{searchTerm}"
+                </h2>
+                <button 
+                  className="text-sm text-gray-500 hover:text-gray-700"
+                  onClick={() => setSearchTerm('')}
+                >
+                  Clear search
+                </button>
+              </div>
+              
+              {filteredEvents.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredEvents.map(event => (
+                    <UpcomingEventCard key={event.id} event={event} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <Search className="mx-auto h-12 w-12 text-gray-400" />
+                  <h3 className="mt-2 text-lg font-medium text-gray-900">No results found</h3>
+                  <p className="mt-1 text-gray-500">
+                    Try searching with different keywords
+                  </p>
+                </div>
+              )}
+            </div>
           ) : (
-            // Render default dashboard content
+            // Default Dashboard Content
             <>
               <div className="mb-6">
                 <motion.h1 

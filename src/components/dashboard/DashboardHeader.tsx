@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Bell, Search, Menu, X, User, Calendar } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -5,9 +6,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface DashboardHeaderProps {
   toggleSidebar: () => void;
   isSidebarOpen: boolean;
+  searchTerm?: string;
+  handleSearchChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleKeyUp?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
-const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: DashboardHeaderProps) => {
+const DashboardHeader = ({ 
+  toggleSidebar, 
+  isSidebarOpen, 
+  searchTerm = '', 
+  handleSearchChange = () => {}, 
+  handleKeyUp = () => {} 
+}: DashboardHeaderProps) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   
@@ -31,6 +41,9 @@ const DashboardHeader = ({ toggleSidebar, isSidebarOpen }: DashboardHeaderProps)
           type="text"
           placeholder="Search..."
           className="bg-transparent border-none focus:outline-none text-sm w-full"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          onKeyUp={handleKeyUp}
         />
       </div>
       
