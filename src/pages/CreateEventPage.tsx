@@ -1,10 +1,11 @@
+// src/pages/CreateEventPage.tsx
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { createEvent } from '../services/eventService';
-import { 
+import { createEvent, createTicketTypes } from '../services/eventService';
+import {
   MapPin, Tag, Image as ImageIcon, BookOpen,
-  Building2, Ticket, Plus, Trash2, ArrowLeft, XCircle
+  Ticket, Plus, Trash2, ArrowLeft, XCircle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -13,14 +14,14 @@ const CreateEventPage = () => {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { user, token} = useAuth();
-  
+  const { token } = useAuth();
+
   const categories = [
-    'Music', 'Sports', 'Food & Drink', 'Arts', 
+    'Music', 'Sports', 'Food & Drink', 'Arts',
     'Business', 'Technology', 'Education', 'Other'
   ];
 
-  // Form state with corrected field names
+  // Form state (removed organizer)
   const [eventData, setEventData] = useState({
     name: '',
     description: '',
@@ -29,12 +30,11 @@ const CreateEventPage = () => {
     venue: '',
     category: '',
     image: null as File | null,
-    organizer: user?.lastname|| 'My Organization',
   });
 
-  // Ticket types state with corrected field names
+  // Ticket types state with initialStock
   const [ticketTypes, setTicketTypes] = useState([
-    { id: 1, name: 'VIP', price: 0 }
+    { id: 1, name: 'VIP', price: 0, initialStock: 0 }
   ]);
 
   // Form handlers
@@ -52,18 +52,22 @@ const CreateEventPage = () => {
   };
 
   const handleTicketChange = (id: number, field: string, value: string) => {
-    setTicketTypes(prev => prev.map(ticket => 
-      ticket.id === id 
-        ? { ...ticket, [field]: field === 'price' ? parseFloat(value) || 0 : value }
+    setTicketTypes(prev => prev.map(ticket =>
+      ticket.id === id
+        ? {
+            ...ticket,
+            [field]: field === 'price' || field === 'initialStock' ? parseInt(value) || 0 : value
+          }
         : ticket
     ));
   };
 
   const addTicketType = () => {
-    setTicketTypes(prev => [...prev, { 
-      id: Date.now(), 
-      name: '', 
-      price: 0 
+    setTicketTypes(prev => [...prev, {
+      id: Date.now(),
+      name: '',
+      price: 0,
+      initialStock: 0
     }]);
   };
 
@@ -86,81 +90,71 @@ const CreateEventPage = () => {
   };
 
   const validateStep2 = () => {
-    return ticketTypes.every(ticket => 
-      ticket.name.trim() !== '' && 
-      ticket.price >= 0
+    return ticketTypes.every(ticket =>
+      ticket.name.trim() !== '' &&
+      ticket.price >= 0 &&
+      ticket.initialStock >= 0
     );
   };
- 
 
   // Form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    setError(null);
+  // src/pages/CreateEventPage.tsx
 
-    if (!token) {
-      console.error("User is not authenticated");
-      return;
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setIsSubmitting(true);
+  setError(null);
+
+  if (!token) {
+    setError('User is not authenticated');
+    setIsSubmitting(false);
+    return;
+  }
+
+  try {
+    console.log('Creating event with data:', eventData);
+    const createdEvent = await createEvent({
+      ...eventData,
+      image: eventData.image || undefined,
+    }, token);
+
+    console.log('Created event:', createdEvent);
+
+    if (!createdEvent.id) {
+      throw new Error('Event was created but no ID was returned');
     }
-    
-    try {
-      const tickets = ticketTypes.map(({ name, price }) => ({ name, price }));
-      const requestData = {
-        eventData: {
-          ...eventData,
-          image: eventData.image || undefined
-        },
-        tickets,
-        token
-      };
-      console.log('Sending to API:', {
-        eventData: {
-          ...requestData.eventData,
-          image: requestData.eventData.image ? requestData.eventData.image.name : 'No image'
-        },
-        tickets: requestData.tickets,
-        token: 'Bearer ...' + token.slice(-4) // Log just the end of token for security
-      });
-  
-      
-      const createdEvent = await createEvent({
-        ...eventData,
-        image: eventData.image || undefined
-      }, tickets,token);
-     
-      console.log('API Response:', createdEvent);
-  
-      if (!createdEvent.id) {
-        throw new Error('Event was created but no ID was returned');
-      }
-      console.log('Submitting event with data:', {
-        eventData,
-        ticketTypes,
-        token,
-      });
-      alert('Event created successfully!');
-      navigate(`/event/${createdEvent.id}`);
-    } catch (error) {
-      let errorMessage = 'Failed to create event';
-      if (error instanceof Error) {
-        errorMessage = error.message;
-        // Handle specific error cases
-        if (error.message.includes('Failed to connect')) {
-          errorMessage = 'Cannot connect to server. Please check your internet connection.';
-        } else if (error.message.includes('Server responded')) {
-          errorMessage = `Server error: ${error.message}`;
-        }
-      }
-      setError(errorMessage);
-    } finally {
-      setIsSubmitting(false);
+
+    if (ticketTypes.length === 0) {
+      throw new Error('At least one ticket type is required');
     }
-  };
+
+    const tickets = ticketTypes.map(({ name, price, initialStock }) => ({
+      name: name.trim(),
+      price: Math.floor(Number(price)),
+      initialStock: Math.floor(Number(initialStock)),
+    }));
+
+    console.log('Creating ticket types:', { eventId: createdEvent.id, tickets });
+
+    await createTicketTypes(createdEvent.id, tickets, token);
+
+    alert('Event and ticket types created successfully!');
+    navigate(`/event/${createdEvent.id}`);
+  } catch (error) {
+    let errorMessage = 'Failed to create event or ticket types';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+      console.error('Submission error:', error);
+    }
+    setError(errorMessage);
+  } finally {
+    setIsSubmitting(false);
+  }
+};
 
   return (
     <div className="container-custom py-8">
-      <button 
+      <button
         onClick={() => navigate(-1)}
         className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
       >
@@ -189,7 +183,7 @@ const CreateEventPage = () => {
 
         {/* Progress Steps */}
         <div className="flex mb-6">
-          <div 
+          <div
             className={`flex-1 border-b-2 pb-2 ${step === 1 ? 'border-primary-500' : 'border-gray-200'}`}
           >
             <div className={`flex items-center justify-center ${step === 1 ? 'text-primary-500' : 'text-gray-500'}`}>
@@ -199,7 +193,7 @@ const CreateEventPage = () => {
               <span className="font-medium text-sm">Event Details</span>
             </div>
           </div>
-          <div 
+          <div
             className={`flex-1 border-b-2 pb-2 ${step === 2 ? 'border-primary-500' : 'border-gray-200'}`}
           >
             <div className={`flex items-center justify-center ${step === 2 ? 'text-primary-500' : 'text-gray-500'}`}>
@@ -332,25 +326,6 @@ const CreateEventPage = () => {
                   </div>
                 </div>
 
-                {/* Organizer */}
-                <div>
-                  <label htmlFor="organizer" className="block text-sm font-medium text-gray-700 mb-1">
-                    Organizer
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      id="organizer"
-                      name="organizer"
-                      value={eventData.organizer}
-                      onChange={handleEventChange}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-gray-100"
-                      readOnly
-                    />
-                    <Building2 className="absolute right-3 top-2 h-4 w-4 text-gray-400" />
-                  </div>
-                </div>
-
                 {/* Event Image */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -375,9 +350,9 @@ const CreateEventPage = () => {
                   </div>
                   {eventData.image && (
                     <div className="mt-2">
-                      <img 
-                        src={URL.createObjectURL(eventData.image)} 
-                        alt="Event preview" 
+                      <img
+                        src={URL.createObjectURL(eventData.image)}
+                        alt="Event preview"
                         className="h-24 object-cover rounded-lg"
                       />
                     </div>
@@ -421,7 +396,7 @@ const CreateEventPage = () => {
                 {ticketTypes.map(ticket => (
                   <div key={ticket.id} className="bg-gray-50 p-3 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <div className="md:col-span-2">
+                      <div>
                         <label htmlFor={`ticket-name-${ticket.id}`} className="block text-sm font-medium text-gray-700 mb-1">
                           Ticket Name
                         </label>
@@ -449,12 +424,29 @@ const CreateEventPage = () => {
                             value={ticket.price}
                             onChange={(e) => handleTicketChange(ticket.id, 'price', e.target.value)}
                             min="0"
-                           
+                            step="1" // Enforce integers
                             className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
-                            
                             required
                           />
                           <span className="absolute right-3 top-2 text-gray-500 text-sm">Frw</span>
+                        </div>
+                      </div>
+                      <div>
+                        <label htmlFor={`ticket-stock-${ticket.id}`} className="block text-sm font-medium text-gray-700 mb-1">
+                          Initial Stock
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            id={`ticket-stock-${ticket.id}`}
+                            value={ticket.initialStock}
+                            onChange={(e) => handleTicketChange(ticket.id, 'initialStock', e.target.value)}
+                            min="0"
+                            step="1" // Enforce integers
+                            className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                            required
+                          />
+                          <span className="absolute right-3 top-2 text-gray-500 text-sm">Qty</span>
                         </div>
                       </div>
                     </div>

@@ -76,6 +76,7 @@ const Otpcheck = () => {
         email: tokenData.email,
         role: tokenData.role,
         status: tokenData.status,
+        organization:tokenData.organization,
         permissions: tokenData.permissions,
         tokenExpiresAt: Date.now() + tokenData.expiresIn * 1000,
       };
