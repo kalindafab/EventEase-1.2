@@ -12,12 +12,12 @@ const DashboardLayout = () => {
   };
   
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
       {/* Sidebar - Mobile Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
           <motion.div 
-            className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
+            className="fixed inset-0 bg-black bg-opacity-50 dark:bg-opacity-70 z-20 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -40,7 +40,7 @@ const DashboardLayout = () => {
       <div className="flex-1 flex flex-col overflow-hidden">
         <DashboardHeader toggleSidebar={toggleSidebar} isSidebarOpen={isSidebarOpen} />
         
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 dark:bg-gray-900 transition-colors">
           {/* This Outlet will render the nested routes */}
           <Outlet />
         </main>
