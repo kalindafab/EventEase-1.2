@@ -29,7 +29,9 @@ const CreateEventPage = () => {
     venue: '',
     category: '',
     image: null as File | null,
+
     organizer: user?.lastname|| 'My Organization',
+
   });
 
   // Ticket types state with corrected field names
@@ -140,7 +142,7 @@ const CreateEventPage = () => {
         token,
       });
       alert('Event created successfully!');
-     
+
     } catch (error) {
       let errorMessage = 'Failed to create event';
       if (error instanceof Error) {

@@ -208,7 +208,9 @@ const EventDetailsPage = () => {
             <div className="bg-white rounded-xl shadow-lg p-6 sticky top-24">
               <div className="mb-6">
                 <h3 className="text-2xl font-bold mb-2">
+
                   {event.price === 0 ? 'Free' : `${event.price} Frw`}
+
                 </h3>
                 
                 <div className="flex items-center text-gray-600 mb-6">

@@ -1,6 +1,6 @@
-// src/services/eventService.ts
 
 import { useAuth } from "../contexts/AuthContext";
+
 
 interface TicketTypeDto {
     name: string;
@@ -42,11 +42,11 @@ eventData: EventFormData, ticketTypes: TicketTypeDto[], token: string,
     if (eventData.image) {
       formData.append('Image', eventData.image);
     }
-  
     const validTickets = ticketTypes
       .filter(ticket => ticket.name.trim() !== '' && ticket.price >= 0)
       .map(({ name, price }) => ({ name, price }));
     formData.append('TicketTypes', JSON.stringify(validTickets));
+
 
     try {
       const response = await fetch(`${API_BASE_URL}/create`, {
