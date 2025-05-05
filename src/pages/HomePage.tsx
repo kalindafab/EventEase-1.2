@@ -1,23 +1,19 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, Zap, Users } from 'lucide-react';
+import { Calendar, MapPin, Users, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { eventsData, Event } from '../data/eventsData';
 import EventCard from '../components/events/EventCard';
-import SearchBar from '../components/ui/SearchBar';
-import CategoryFilter from '../components/ui/CategoryFilter';
-
-// here use
-
 import { useTranslation } from '../components/layout/transaction';
+import CategoryFilter from '../components/ui/CategoryFilter';
+import SearchBar from '../components/ui/SearchBar';
 import { useLanguage } from '../Context/LanguageContext';
+import { Event, eventsData } from '../data/eventsData';
 
 const HomePage = () => {
   const [events, setEvents] = useState<Event[]>(eventsData);
   const [featuredEvent, setFeaturedEvent] = useState<Event | null>(null);
   const [activeCategory, setActiveCategory] = useState('All');
-  // here use 
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const { t } = useTranslation();
 
   const categories = Array.from(new Set(eventsData.map(event => event.category)));
