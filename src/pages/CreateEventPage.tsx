@@ -30,6 +30,9 @@ const CreateEventPage = () => {
     venue: '',
     category: '',
     image: null as File | null,
+
+    organizer: user?.organization|| 'My Organization',
+
   });
 
   // Ticket types state with initialStock
@@ -124,8 +127,63 @@ const handleSubmit = async (e: React.FormEvent) => {
       throw new Error('Event was created but no ID was returned');
     }
 
+
     if (ticketTypes.length === 0) {
       throw new Error('At least one ticket type is required');
+
+    
+    try {
+      const tickets = ticketTypes.map(({ name, price }) => ({ name, price }));
+      const requestData = {
+        eventData: {
+          ...eventData,
+          image: eventData.image || undefined
+        },
+        tickets,
+        token
+      };
+      console.log('Sending to API:', {
+        eventData: {
+          ...requestData.eventData,
+          image: requestData.eventData.image ? requestData.eventData.image.name : 'No image'
+        },
+        tickets: requestData.tickets,
+        token: 'Bearer ...' + token.slice(-4) // Log just the end of token for security
+      });
+  
+      
+      const createdEvent = await createEvent({
+        ...eventData,
+        image: eventData.image || undefined
+      }, tickets,token);
+     
+      console.log('API Response:', createdEvent);
+  
+      if (!createdEvent.id) {
+        throw new Error('Event was created but no ID was returned');
+      }
+      console.log('Submitting event with data:', {
+        eventData,
+        ticketTypes,
+        token,
+      });
+      alert('Event created successfully!');
+      
+    } catch (error) {
+      let errorMessage = 'Failed to create event';
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        // Handle specific error cases
+        if (error.message.includes('Failed to connect')) {
+          errorMessage = 'Cannot connect to server. Please check your internet connection.';
+        } else if (error.message.includes('Server responded')) {
+          errorMessage = `Server error: ${error.message}`;
+        }
+      }
+      setError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+
     }
 
     const tickets = ticketTypes.map(({ name, price, initialStock }) => ({

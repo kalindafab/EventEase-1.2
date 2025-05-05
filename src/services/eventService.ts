@@ -1,5 +1,3 @@
-// src/services/eventService.ts
-
 interface TicketTypeDto {
   name: string;
   price: number;
