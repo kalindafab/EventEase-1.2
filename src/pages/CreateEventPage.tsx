@@ -2,10 +2,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { createEvent, createTicketTypes } from '../services/eventService';
-import {
-  MapPin, Tag, Image as ImageIcon, BookOpen,
-  Ticket, Plus, Trash2, ArrowLeft, XCircle
+
+import { createEvent } from '../services/eventService';
+import { 
+  MapPin, Tag, BookOpen,
+  Building2, Ticket, Plus, Trash2, ArrowLeft, XCircle
+
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -14,7 +16,10 @@ const CreateEventPage = () => {
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { token } = useAuth();
+
+  const { user, token} = useAuth();
+  const [createdEventId, setCreatedEventId] = useState<string | null>(null);
+  
 
   const categories = [
     'Music', 'Sports', 'Food & Drink', 'Arts',
@@ -30,8 +35,7 @@ const CreateEventPage = () => {
     venue: '',
     category: '',
     image: null as File | null,
-
-    organizer: user?.organization|| 'My Organization',
+    organizer: user?.lastname|| 'My Organization',
 
   });
 
@@ -46,13 +50,6 @@ const CreateEventPage = () => {
     setEventData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      setEventData(prev => ({ ...prev, image: e.target.files![0] }));
-    } else {
-      setEventData(prev => ({ ...prev, image: null }));
-    }
-  };
 
   const handleTicketChange = (id: number, field: string, value: string) => {
     setTicketTypes(prev => prev.map(ticket =>
@@ -134,27 +131,12 @@ const handleSubmit = async (e: React.FormEvent) => {
     
     try {
       const tickets = ticketTypes.map(({ name, price }) => ({ name, price }));
-      const requestData = {
-        eventData: {
-          ...eventData,
-          image: eventData.image || undefined
-        },
-        tickets,
-        token
-      };
-      console.log('Sending to API:', {
-        eventData: {
-          ...requestData.eventData,
-          image: requestData.eventData.image ? requestData.eventData.image.name : 'No image'
-        },
-        tickets: requestData.tickets,
-        token: 'Bearer ...' + token.slice(-4) // Log just the end of token for security
-      });
-  
+      
       
       const createdEvent = await createEvent({
         ...eventData,
-        image: eventData.image || undefined
+         image: eventData.image || undefined
+        
       }, tickets,token);
      
       console.log('API Response:', createdEvent);
@@ -162,13 +144,14 @@ const handleSubmit = async (e: React.FormEvent) => {
       if (!createdEvent.id) {
         throw new Error('Event was created but no ID was returned');
       }
+      setCreatedEventId(createdEvent.id);
       console.log('Submitting event with data:', {
         eventData,
         ticketTypes,
         token,
       });
-      alert('Event created successfully!');
-      
+      alert('Event created successfully! please upload an Image');
+
     } catch (error) {
       let errorMessage = 'Failed to create event';
       if (error instanceof Error) {
@@ -209,6 +192,37 @@ const handleSubmit = async (e: React.FormEvent) => {
     setIsSubmitting(false);
   }
 };
+
+  const handleImageUpload = async () => {
+  if (!eventData.image || !createdEventId || !token) {
+    setError("Please select an image.");
+    return;
+  }
+
+  try {
+    const formData = new FormData();
+    formData.append("image", eventData.image);
+
+    const res = await fetch(`http://localhost:5297/api/Event/upload-Image/${createdEventId}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!res.ok) {
+      throw new Error("Image upload failed");
+    }
+
+    alert("Image uploaded successfully!");
+    setCreatedEventId(null);
+    navigate("/dashboard"); // or wherever you want
+  } catch (err: any) {
+    setError(err.message || "Upload failed");
+  }
+};
+
 
   return (
     <div className="container-custom py-8">
@@ -384,37 +398,24 @@ const handleSubmit = async (e: React.FormEvent) => {
                   </div>
                 </div>
 
-                {/* Event Image */}
+
+                {/* Organizer */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Event Image
+                  <label htmlFor="organizer" className="block text-sm font-medium text-gray-700 mb-1">
+                    Organizer
                   </label>
-                  <div className="mt-1 flex items-center">
-                    <label
-                      htmlFor="image-upload"
-                      className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 cursor-pointer"
-                    >
-                      <ImageIcon className="h-4 w-4 mr-2 text-gray-500" />
-                      {eventData.image ? eventData.image.name : 'Upload Image'}
-                    </label>
+                  <div className="relative">
                     <input
-                      id="image-upload"
-                      name="image"
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="sr-only"
+                      type="text"
+                      id="organizer"
+                      name="organizer"
+                      value={eventData.organizer}
+                      onChange={handleEventChange}
+                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-gray-100"
+                      readOnly
                     />
+                    <Building2 className="absolute right-3 top-2 h-4 w-4 text-gray-400" />
                   </div>
-                  {eventData.image && (
-                    <div className="mt-2">
-                      <img
-                        src={URL.createObjectURL(eventData.image)}
-                        alt="Event preview"
-                        className="h-24 object-cover rounded-lg"
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
 
@@ -560,6 +561,40 @@ const handleSubmit = async (e: React.FormEvent) => {
             </motion.div>
           )}
         </form>
+        {createdEventId && (
+  <div className="mt-8 border-t pt-6">
+    <h2 className="text-lg font-bold mb-2">Upload Event Image</h2>
+
+    <div className="space-y-4">
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => {
+          if (e.target.files?.[0]) {
+            setEventData((prev) => ({ ...prev, image: e.target.files![0] }));
+          }
+        }}
+      />
+
+      {eventData.image && (
+        <img
+          src={URL.createObjectURL(eventData.image)}
+          alt="Preview"
+          className="w-full h-48 object-cover rounded"
+        />
+      )}
+
+      <button
+        onClick={handleImageUpload}
+        className="btn-primary px-4 py-2"
+        disabled={!eventData.image}
+      >
+        Upload Image
+      </button>
+    </div>
+  </div>
+)}
+
       </div>
     </div>
   );

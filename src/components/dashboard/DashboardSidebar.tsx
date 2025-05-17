@@ -143,7 +143,9 @@ const DashboardSidebar = () => {
     { 
       icon: <Calendar className="h-5 w-5" />, 
       text: 'My Events', 
+
       to: '/dashboard/view-my-events',
+
       permission: 'CanViewOwnEvents',
       role: 'manager'
     },
@@ -172,13 +174,9 @@ const DashboardSidebar = () => {
       permission: 'CanManageProfile'
     }
   ];
-
-  const filteredItems = navItems.filter(item => {
-    const hasPerm = item.permission ? hasPermission(item.permission) : true;
-    const roleAllowed = item.role ? user?.role === item.role : true;
-    return hasPerm && roleAllowed;
-  });
-
+const filteredItems = navItems.filter(item => {
+  return item.permission ? hasPermission(item.permission) : true;
+});
   return (
     <div className="h-full flex flex-col bg-white border-r border-gray-200">
       <div className="p-6">

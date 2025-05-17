@@ -51,7 +51,9 @@ const DashboardPage = () => {
                        location.pathname.includes('/dashboard/approvals') ||
                        location.pathname.includes('/dashboard/createEvents') ||
                        location.pathname.includes('/dashboard/attendees') ||
+
                        location.pathname.includes('/dashboard/view-my-events');
+
 
   // Show search results or default content
   const showSearchResults = searchTerm.trim() && !isNestedRoute;
@@ -174,7 +176,7 @@ const DashboardPage = () => {
                 
                 <StatCard
                   title="Total Revenue"
-                  value="$8,492"
+                  value="8,000 Frw"
                   icon={<CreditCard size={24} className="text-green-600" />}
                   change={{ value: 8, isPositive: true }}
                   bgColor="bg-green-50"
@@ -298,7 +300,7 @@ const DashboardPage = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium">New Registration</p>
-                      <p className="text-sm text-gray-600">John Doe registered for "TechConnect Conference 2025"</p>
+                      <p className="text-sm text-gray-600">Luvumbu registered for "TechConnect Conference 2025"</p>
                       <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
                     </div>
                   </div>
@@ -310,7 +312,7 @@ const DashboardPage = () => {
                     </div>
                     <div>
                       <p className="text-sm font-medium">Payment Received</p>
-                      <p className="text-sm text-gray-600">You received $299 for "Summer Music Festival" ticket</p>
+                      <p className="text-sm text-gray-600">You received 299 Frw for "Summer Music Festival" ticket</p>
                       <p className="text-xs text-gray-500 mt-1">Yesterday</p>
                     </div>
                   </div>

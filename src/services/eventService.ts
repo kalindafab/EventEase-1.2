@@ -1,3 +1,7 @@
+
+import { useAuth } from "../contexts/AuthContext";
+
+
 interface TicketTypeDto {
   name: string;
   price: number;
@@ -46,6 +50,7 @@ export const createEvent = async (eventData: EventFormData, token: string) => {
       const error = await response.json().catch(() => ({}));
       throw new Error(error.message || `Failed to create event: ${response.status}`);
     }
+
 
     const result = await response.json();
     console.log('CreateEvent response:', result);
@@ -99,6 +104,7 @@ export const createTicketTypes = async (
       const error = await response.json().catch(() => ({}));
       console.error('Ticket Types Error Response:', error);
       throw new Error(error.error || `Failed to create ticket types: ${response.status}`);
+
     }
 
     const result = await response.json();

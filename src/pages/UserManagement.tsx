@@ -11,7 +11,7 @@ const PERMISSIONS = {
 const ALL_PERMISSIONS = Array.from(new Set(Object.values(PERMISSIONS).flat()));
 
 const UserManagement = () => {
-  const { user: currentUser } = useAuth();
+  useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [permissionModalOpen, setPermissionModalOpen] = useState(false);
@@ -32,45 +32,42 @@ const UserManagement = () => {
     }
   };
 
-  const toggleAccountStatus = async (userId: string, shouldLock: boolean) => {
-    try {
-      const response = await fetch(`http://localhost:5297/api/admin/users/${userId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ locked: shouldLock }),
-      });
+const toggleAccountStatus = async (userId: string, isLocking: boolean) => {
+  try {
+    const response = await fetch(`http://localhost:5297/api/admin/users/${userId}/lock?isLocked=${isLocking}`, {
+      method: 'PUT',
+    });
 
-      if (response.ok) {
-        setUsers(users.map(user =>
-          user.id === userId
-            ? { ...user, status: shouldLock ? 'locked' : 'approved' }
-            : user
-        ));
-      }
-    } catch (error) {
-      console.error('Error updating user status:', error);
+    if (response.ok) {
+      setUsers(users.map(user =>
+        user.id === userId
+          ? { ...user, status: isLocking ? 'locked' : 'approved' }
+          : user
+      ));
+    } else {
+      console.error('Failed to toggle account status');
     }
-  };
+  } catch (error) {
+    console.error('Error toggling account status:', error);
+  }
+};
+const openPermissionModal = (user: User) => {
+  setSelectedUser(user);
 
-  const openPermissionModal = (user: User) => {
-    setSelectedUser(user);
-    setUserPermissions(user.permissions || PERMISSIONS[user.role] || []);
-    setPermissionModalOpen(true);
-  };
+  const roleDefaults = PERMISSIONS[user.role] || [];
+  const manualPermissions = (user.permissions || []).filter(
+    (perm) => !roleDefaults.includes(perm)
+  );
 
-  const handlePermissionChange = (perm: string) => {
-    setUserPermissions(prev =>
-      prev.includes(perm)
-        ? prev.filter(p => p !== perm)
-        : [...prev, perm]
-    );
-  };
+  setUserPermissions(manualPermissions); // only manual (editable) ones
+  setPermissionModalOpen(true);
+};
 
   const savePermissions = async () => {
     if (!selectedUser) return;
 
     try {
-      const response = await fetch(`http://localhost:5297/api/admin/users/${selectedUser.id}/permissions`, {
+      const response = await fetch(`http://localhost:5297/api/admin/users/${selectedUser.id}/addpermissions`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ permissions: userPermissions }),
@@ -87,6 +84,14 @@ const UserManagement = () => {
       console.error('Error saving permissions:', error);
     }
   };
+
+ const handlePermissionChange = (perm: string) => {
+  setUserPermissions(prev =>
+    prev.includes(perm)
+      ? prev.filter(p => p !== perm)
+      : [...prev, perm]
+  );
+};
 
   return (
     <div className="bg-white rounded-xl shadow-sm p-6">
