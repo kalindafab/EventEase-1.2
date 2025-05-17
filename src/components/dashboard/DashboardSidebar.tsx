@@ -143,7 +143,9 @@ const DashboardSidebar = () => {
     { 
       icon: <Calendar className="h-5 w-5" />, 
       text: 'My Events', 
-      to: '/dashboard/myEvents',
+
+      to: '/dashboard/view-my-events',
+
       permission: 'CanViewOwnEvents',
       role: 'manager'
     },

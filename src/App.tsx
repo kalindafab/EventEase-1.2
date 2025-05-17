@@ -12,7 +12,11 @@ import UserManagement from './pages/UserManagement';
 import ManagerApprovals from './pages/ManagerApprovals';
 import CreateEventPage from './pages/CreateEventPage';
 import AttendeesPage from './pages/AttendeesPage';
+
+import ViewEvents from './pages/ViewEvents';
+
 import MyEvents from './pages/MyEvents';
+
 
 function App() {
   const location = useLocation();
@@ -39,7 +43,11 @@ function App() {
               {/* manager sections */}
               <Route path="createEvents" element={<CreateEventPage />} />
               <Route path="attendees" element={<AttendeesPage />} />
-              <Route path="myEvents" element={<MyEvents />} />
+
+              <Route path="view-my-events" element={<ViewEvents/>} />
+
+            
+
               
               {/* Your other existing dashboard routes would go here */}
             </Route>
