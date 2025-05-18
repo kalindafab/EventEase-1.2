@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../contexts/AuthContext';
 import LineGraph from './LineGraph';
-import PieChartDraggable from './Piechart'; 
+import PieChartDraggable from './Piechart';
 import { motion } from 'framer-motion';
 
 type Event = {
   id: string;
   name: string;
+  imageUrl?: string;
 };
 
 const MyEvents: React.FC = () => {
@@ -36,6 +37,40 @@ const MyEvents: React.FC = () => {
       fetchMyEvents();
     }
   }, [token]);
+
+  useEffect(() => {
+    const fetchEventImage = async () => {
+      if (!selectedEventId) return;
+
+      try {
+        const response = await axios.get(
+          `http://localhost:5297/api/Event/get-image/${selectedEventId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            responseType: 'blob',
+          }
+        );
+
+        const imageUrl = URL.createObjectURL(response.data);
+
+        setEvents((prevEvents) =>
+          prevEvents.map((ev) =>
+            ev.id === selectedEventId ? { ...ev, imageUrl } : ev
+          )
+        );
+      } catch (error) {
+        console.error('Failed to fetch event image:', error);
+      }
+    };
+
+    if (token && selectedEventId) {
+      fetchEventImage();
+    }
+  }, [selectedEventId, token]);
+
+  const selectedEvent = events.find((ev) => ev.id === selectedEventId);
 
   return (
     <motion.div
@@ -68,6 +103,21 @@ const MyEvents: React.FC = () => {
           ))}
         </select>
       </motion.div>
+
+      {selectedEvent?.imageUrl && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="flex justify-center"
+        >
+          <img
+            src={selectedEvent.imageUrl}
+            alt={selectedEvent.name}
+            className="w-full max-w-md h-auto rounded-lg shadow-lg"
+          />
+        </motion.div>
+      )}
 
       {selectedEventId && (
         <>

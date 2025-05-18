@@ -15,7 +15,6 @@ import AttendeesPage from './pages/AttendeesPage';
 
 import ViewEvents from './pages/ViewEvents';
 
-import MyEvents from './pages/MyEvents';
 
 
 function App() {

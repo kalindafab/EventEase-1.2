@@ -12,7 +12,7 @@ interface PendingManager {
 const ManagerApprovals = () => {
   const [managers, setManagers] = useState<PendingManager[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user: currentUser } = useAuth();
+  useAuth();
   
 
   useEffect(() => {

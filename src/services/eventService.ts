@@ -23,7 +23,7 @@ const API_BASE_URL = 'http://localhost:5297/api/Event';
 const API_TiCKET_URL = 'http://localhost:5297/api/TicketType';
 
 // Create Event (assuming this now works)
-export const createEvent = async (eventData: EventFormData, token: string) => {
+export const createEvent = async (eventData: EventFormData, tickets: { name: string; price: number; }[], token: string) => {
   const formData = new FormData();
   formData.append('Name', eventData.name);
   formData.append('Description', eventData.description);
