@@ -14,6 +14,7 @@ import CreateEventPage from './pages/CreateEventPage';
 import AttendeesPage from './pages/AttendeesPage';
 
 import ViewEvents from './pages/ViewEvents';
+import AllEvents from './pages/AllEvents';
 
 
 
@@ -44,11 +45,13 @@ function App() {
               <Route path="attendees" element={<AttendeesPage />} />
 
               <Route path="view-my-events" element={<ViewEvents/>} />
+              <Route path="AllEvents" element={<AllEvents/>} />
+
 
             
 
               
-              {/* Your other existing dashboard routes would go here */}
+             
             </Route>
           </Route>
         </Routes>

@@ -9,7 +9,8 @@ import {
   PlusCircle,
   Bookmark,
   UserCog,
-  ShieldQuestion
+  ShieldQuestion,
+  Ticket
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-toastify';
@@ -165,6 +166,14 @@ const DashboardSidebar = () => {
       permission: 'CanViewOwnTickets',
       role: 'client'
     },
+    { 
+      icon: <Ticket className="h-5 w-5" />, 
+      text: 'Upcoming Events', 
+      to: '/dashboard/AllEvents',
+      permission: 'CanViewAllEvents',
+      role: 'client'
+    },
+
 
     // Logout (all roles)
     { 

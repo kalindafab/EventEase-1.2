@@ -5,7 +5,7 @@ import { User } from '../types/user';
 const PERMISSIONS = {
   admin: ['CanApproveManagers', 'CanManageUsers', 'CanManageSettings', 'CanManageProfile'],
   manager: ['CanCreateEvents', 'CanViewOwnEvents', 'CanViewTicketSales', 'CanManageProfile'],
-  client: ['CanBrowseEvents', 'CanViewOwnTickets', 'CanManageProfile'],
+  client: ['CanBrowseEvents', 'CanViewOwnTickets', 'CanManageProfile','CanViewAllEvents'],
 };
 
 const ALL_PERMISSIONS = Array.from(new Set(Object.values(PERMISSIONS).flat()));
