@@ -11,10 +11,11 @@ import { AuthProvider } from './contexts/AuthContext';
 import UserManagement from './pages/UserManagement';
 import ManagerApprovals from './pages/ManagerApprovals';
 import CreateEventPage from './pages/CreateEventPage';
-import AttendeesPage from './pages/AttendeesPage';
+
 
 import ViewEvents from './pages/ViewEvents';
 import AllEvents from './pages/AllEvents';
+import BuyTicket from './pages/BuyTicket';
 
 
 
@@ -29,6 +30,7 @@ function App() {
             {/* Public routes */}
             <Route index element={<HomePage />} />
             <Route path="event/:id" element={<EventDetailsPage />} />
+            <Route path="buy-ticket/:eventId" element={<BuyTicket />} />
             
             {/* Auth routes */}
             <Route path="/Signup" element={<Signup />} />
@@ -42,10 +44,10 @@ function App() {
               <Route path="approvals" element={<ManagerApprovals />} />
               {/* manager sections */}
               <Route path="createEvents" element={<CreateEventPage />} />
-              <Route path="attendees" element={<AttendeesPage />} />
+              <Route path="attendees" element={<AllEvents/>} />
 
               <Route path="view-my-events" element={<ViewEvents/>} />
-              <Route path="AllEvents" element={<AllEvents/>} />
+              {/* <Route path="AllEvents" element={<AllEvents/>} /> */}
 
 
             

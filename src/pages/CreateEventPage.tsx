@@ -37,7 +37,7 @@ const CreateEventPage = () => {
 
   // Ticket types state with corrected field names
   const [ticketTypes, setTicketTypes] = useState([
-    { id: 1, name: 'VIP', price: 0 }
+    { id: 1, name: 'VIP', price: 0 ,initialStock:0}
   ]);
 
   // Form handlers
@@ -50,7 +50,12 @@ const CreateEventPage = () => {
   const handleTicketChange = (id: number, field: string, value: string) => {
     setTicketTypes(prev => prev.map(ticket => 
       ticket.id === id 
-        ? { ...ticket, [field]: field === 'price' ? parseFloat(value) || 0 : value }
+        ? { 
+            ...ticket, 
+            [field]: field === 'price' || field === 'initialStock' 
+              ? parseFloat(value) || 0 
+              : value 
+          }
         : ticket
     ));
   };
@@ -59,7 +64,8 @@ const CreateEventPage = () => {
     setTicketTypes(prev => [...prev, { 
       id: Date.now(), 
       name: '', 
-      price: 0 
+      price: 0 ,
+      initialStock: 0
     }]);
   };
 
@@ -101,7 +107,7 @@ const CreateEventPage = () => {
     }
     
     try {
-      const tickets = ticketTypes.map(({ name, price }) => ({ name, price }));
+      const tickets = ticketTypes.map(({ name, price , initialStock}) => ({ name, price,initialStock }));
       
       
       const createdEvent = await createEvent({
@@ -402,7 +408,7 @@ const CreateEventPage = () => {
               <div className="space-y-4">
                 {ticketTypes.map(ticket => (
                   <div key={ticket.id} className="bg-gray-50 p-3 rounded-lg">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                       <div className="md:col-span-2">
                         <label htmlFor={`ticket-name-${ticket.id}`} className="block text-sm font-medium text-gray-700 mb-1">
                           Ticket Name
@@ -431,12 +437,26 @@ const CreateEventPage = () => {
                             value={ticket.price}
                             onChange={(e) => handleTicketChange(ticket.id, 'price', e.target.value)}
                             min="0"
-                           
                             className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
-                            
                             required
                           />
                           <span className="absolute right-3 top-2 text-gray-500 text-sm">Frw</span>
+                        </div>
+                      </div>
+                      <div>
+                        <label htmlFor={`ticket-stock-${ticket.id}`} className="block text-sm font-medium text-gray-700 mb-1">
+                          Initial Stock
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="number"
+                            id={`ticket-stock-${ticket.id}`}
+                            value={ticket.initialStock}
+                            onChange={(e) => handleTicketChange(ticket.id, 'initialStock', e.target.value)}
+                            min="0"
+                            className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                            required
+                          />
                         </div>
                       </div>
                     </div>
