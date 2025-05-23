@@ -14,122 +14,74 @@ type Event = {
 const MyEvents: React.FC = () => {
   const { token } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
-  const [selectedEventId, setSelectedEventId] = useState<string>('');
 
   useEffect(() => {
     const fetchMyEvents = async () => {
       try {
         const response = await axios.get<Event[]>('http://localhost:5297/api/Event/my-events', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
-        setEvents(response.data);
-        if (response.data.length > 0) {
-          setSelectedEventId(response.data[0].id);
-        }
+
+        const withImages = await Promise.all(
+          response.data.map(async (event) => {
+            try {
+              const imgRes = await axios.get(
+                `http://localhost:5297/api/Event/get-image/${event.id}`,
+                {
+                  headers: { Authorization: `Bearer ${token}` },
+                  responseType: 'blob',
+                }
+              );
+              const imageUrl = URL.createObjectURL(imgRes.data);
+              return { ...event, imageUrl };
+            } catch {
+              return event;
+            }
+          })
+        );
+
+        setEvents(withImages);
       } catch (error) {
         console.error('Failed to fetch events:', error);
       }
     };
 
-    if (token) {
-      fetchMyEvents();
-    }
+    if (token) fetchMyEvents();
   }, [token]);
-
-  useEffect(() => {
-    const fetchEventImage = async () => {
-      if (!selectedEventId) return;
-
-      try {
-        const response = await axios.get(
-          `http://localhost:5297/api/Event/get-image/${selectedEventId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            responseType: 'blob',
-          }
-        );
-
-        const imageUrl = URL.createObjectURL(response.data);
-
-        setEvents((prevEvents) =>
-          prevEvents.map((ev) =>
-            ev.id === selectedEventId ? { ...ev, imageUrl } : ev
-          )
-        );
-      } catch (error) {
-        console.error('Failed to fetch event image:', error);
-      }
-    };
-
-    if (token && selectedEventId) {
-      fetchEventImage();
-    }
-  }, [selectedEventId, token]);
-
-  const selectedEvent = events.find((ev) => ev.id === selectedEventId);
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 50 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-6 max-w-4xl mx-auto bg-white rounded-2xl shadow-md space-y-6"
+      className="p-6 max-w-7xl mx-auto"
     >
-      <h2 className="text-3xl font-bold text-purple-700">My Events</h2>
+      <h2 className="text-3xl font-bold text-purple-700 mb-6">My Events</h2>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="space-y-2"
-      >
-        <label htmlFor="event-select" className="block text-sm font-medium text-gray-700">
-          Select an Event:
-        </label>
-        <select
-          id="event-select"
-          className="w-full p-2 border border-purple-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-          value={selectedEventId}
-          onChange={(e) => setSelectedEventId(e.target.value)}
-        >
-          {events.map((event) => (
-            <option key={event.id} value={event.id}>
-              {event.name}
-            </option>
-          ))}
-        </select>
-      </motion.div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {events.map((event) => (
+          <motion.div
+            key={event.id}
+            className="bg-white rounded-xl shadow-md p-4 space-y-4"
+            whileHover={{ scale: 1.02 }}
+          >
+            {event.imageUrl && (
+              <img
+                src={event.imageUrl}
+                alt={event.name}
+                className="h-40 w-full object-cover rounded-md"
+              />
+            )}
 
-      {selectedEvent?.imageUrl && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
-          className="flex justify-center"
-        >
-          <img
-            src={selectedEvent.imageUrl}
-            alt={selectedEvent.name}
-            className="w-full max-w-md h-auto rounded-lg shadow-lg"
-          />
-        </motion.div>
-      )}
+            <h3 className="text-lg font-semibold text-purple-700 text-center">{event.name}</h3>
 
-      {selectedEventId && (
-        <>
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}>
-            <LineGraph eventId={selectedEventId} />
+            <div className="space-y-4">
+              <LineGraph eventId={event.id} />
+              <PieChartDraggable eventId={event.id} />
+            </div>
           </motion.div>
-
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}>
-            <PieChartDraggable eventId={selectedEventId} />
-          </motion.div>
-        </>
-      )}
+        ))}
+      </div>
     </motion.div>
   );
 };
