@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { toast } from 'react-toastify';
 
 interface PendingManager {
   id: string;
@@ -12,22 +13,25 @@ interface PendingManager {
 const ManagerApprovals = () => {
   const [managers, setManagers] = useState<PendingManager[]>([]);
   const [loading, setLoading] = useState(true);
-  useAuth();
-  
+  const { token } = useAuth(); // Assuming useAuth provides a token for authentication
 
   useEffect(() => {
     const fetchPendingManagers = async () => {
       try {
         const response = await fetch('http://localhost:5297/api/admin/users', {
-          });
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-  
+          headers: {
+            Authorization: `Bearer ${token}`, // Add auth header if required
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data = await response.json();
         setManagers(data.filter((m: PendingManager) => m.status === 'pending'));
       } catch (error) {
         console.error('Failed to fetch managers:', error);
+        toast.error('Failed to load pending managers.');
       } finally {
         setLoading(false);
       }
@@ -38,15 +42,28 @@ const ManagerApprovals = () => {
 
   const handleDecision = async (managerId: string, approved: boolean) => {
     try {
-      await fetch(`http://localhost:5297/api/admin/managers/${managerId}/status`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: approved ? 'approved' : 'rejected' })
+      const response = await fetch(`http://localhost:5297/api/admin/managers/${managerId}/approval`, {
+        method: 'PUT', // Changed to PUT to match backend
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`, // Add auth header if required
+        },
+        body: JSON.stringify({ approved }), // Match backend DTO: ManagerApprovalDto
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      toast.success(data.message || `Manager ${approved ? 'approved' : 'rejected'} and email sent.`);
       
       // Remove the processed manager from the list
       setManagers(prev => prev.filter(m => m.id !== managerId));
     } catch (error) {
       console.error('Failed to update manager status:', error);
+      toast.error(`Failed to ${approved ? 'approve' : 'reject'} manager: ${error.message}`);
     }
   };
 
