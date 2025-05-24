@@ -30,14 +30,12 @@ const CreateEventPage = () => {
     venue: '',
     category: '',
     image: null as File | null,
-
-    organizer: user?.lastname|| 'My Organization',
-
+    organizer: user?.lastname || 'My Organization',
   });
 
   // Ticket types state with corrected field names
   const [ticketTypes, setTicketTypes] = useState([
-    { id: 1, name: 'VIP', price: 0 ,initialStock:0}
+    { id: 1, name: 'VIP', price: 0, initialStock: 0 }
   ]);
 
   // Form handlers
@@ -45,7 +43,6 @@ const CreateEventPage = () => {
     const { name, value } = e.target;
     setEventData(prev => ({ ...prev, [name]: value }));
   };
-
 
   const handleTicketChange = (id: number, field: string, value: string) => {
     setTicketTypes(prev => prev.map(ticket => 
@@ -64,7 +61,7 @@ const CreateEventPage = () => {
     setTicketTypes(prev => [...prev, { 
       id: Date.now(), 
       name: '', 
-      price: 0 ,
+      price: 0,
       initialStock: 0
     }]);
   };
@@ -94,7 +91,6 @@ const CreateEventPage = () => {
     );
   };
  
-
   // Form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,14 +103,12 @@ const CreateEventPage = () => {
     }
     
     try {
-      const tickets = ticketTypes.map(({ name, price , initialStock}) => ({ name, price,initialStock }));
-      
+      const tickets = ticketTypes.map(({ name, price, initialStock }) => ({ name, price, initialStock }));
       
       const createdEvent = await createEvent({
         ...eventData,
-         image: eventData.image || undefined
-        
-      }, tickets,token);
+        image: eventData.image || undefined
+      }, tickets, token);
      
       console.log('API Response:', createdEvent);
   
@@ -133,7 +127,6 @@ const CreateEventPage = () => {
       let errorMessage = 'Failed to create event';
       if (error instanceof Error) {
         errorMessage = error.message;
-        // Handle specific error cases
         if (error.message.includes('Failed to connect')) {
           errorMessage = 'Cannot connect to server. Please check your internet connection.';
         } else if (error.message.includes('Server responded')) {
@@ -147,60 +140,59 @@ const CreateEventPage = () => {
   };
 
   const handleImageUpload = async () => {
-  if (!eventData.image || !createdEventId || !token) {
-    setError("Please select an image.");
-    return;
-  }
-
-  try {
-    const formData = new FormData();
-    formData.append("image", eventData.image);
-
-    const res = await fetch(`http://localhost:5297/api/Event/upload-Image/${createdEventId}`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    if (!res.ok) {
-      throw new Error("Image upload failed");
+    if (!eventData.image || !createdEventId || !token) {
+      setError("Please select an image.");
+      return;
     }
 
-    alert("Image uploaded successfully!");
-    setCreatedEventId(null);
-    navigate("/dashboard"); // or wherever you want
-  } catch (err: any) {
-    setError(err.message || "Upload failed");
-  }
-};
+    try {
+      const formData = new FormData();
+      formData.append("image", eventData.image);
 
+      const res = await fetch(`http://localhost:5297/api/Event/upload-Image/${createdEventId}`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Image upload failed");
+      }
+
+      alert("Image uploaded successfully!");
+      setCreatedEventId(null);
+      navigate("/dashboard");
+    } catch (err: any) {
+      setError(err.message || "Upload failed");
+    }
+  };
 
   return (
-    <div className="container-custom py-8">
+    <div className="container-custom py-8 bg-white dark:bg-gray-900">
       <button 
         onClick={() => navigate(-1)}
-        className="flex items-center text-gray-600 hover:text-gray-900 mb-4 transition-colors"
+        className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 mb-4 transition-colors"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back
       </button>
 
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-2">Create New Event</h1>
-        <p className="text-gray-600 text-sm mb-6">
+        <h1 className="text-2xl font-bold mb-2 text-gray-800 dark:text-gray-100">Create New Event</h1>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mb-6">
           Fill in the details below to create your event. You'll be able to add ticket types and pricing in the next step.
         </p>
 
         {error && (
-          <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+          <div className="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 mb-6">
             <div className="flex">
               <div className="flex-shrink-0">
-                <XCircle className="h-5 w-5 text-red-500" />
+                <XCircle className="h-5 w-5 text-red-500 dark:text-red-400" />
               </div>
               <div className="ml-3">
-                <p className="text-sm text-red-700">{error}</p>
+                <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
               </div>
             </div>
           </div>
@@ -209,20 +201,20 @@ const CreateEventPage = () => {
         {/* Progress Steps */}
         <div className="flex mb-6">
           <div 
-            className={`flex-1 border-b-2 pb-2 ${step === 1 ? 'border-primary-500' : 'border-gray-200'}`}
+            className={`flex-1 border-b-2 pb-2 ${step === 1 ? 'border-primary-500 dark:border-primary-400' : 'border-gray-200 dark:border-gray-700'}`}
           >
-            <div className={`flex items-center justify-center ${step === 1 ? 'text-primary-500' : 'text-gray-500'}`}>
-              <span className={`flex items-center justify-center w-6 h-6 rounded-full mr-2 text-sm ${step === 1 ? 'bg-primary-100' : 'bg-gray-100'}`}>
+            <div className={`flex items-center justify-center ${step === 1 ? 'text-primary-500 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400'}`}>
+              <span className={`flex items-center justify-center w-6 h-6 rounded-full mr-2 text-sm ${step === 1 ? 'bg-primary-100 dark:bg-primary-900/30' : 'bg-gray-100 dark:bg-gray-800'}`}>
                 1
               </span>
               <span className="font-medium text-sm">Event Details</span>
             </div>
           </div>
           <div 
-            className={`flex-1 border-b-2 pb-2 ${step === 2 ? 'border-primary-500' : 'border-gray-200'}`}
+            className={`flex-1 border-b-2 pb-2 ${step === 2 ? 'border-primary-500 dark:border-primary-400' : 'border-gray-200 dark:border-gray-700'}`}
           >
-            <div className={`flex items-center justify-center ${step === 2 ? 'text-primary-500' : 'text-gray-500'}`}>
-              <span className={`flex items-center justify-center w-6 h-6 rounded-full mr-2 text-sm ${step === 2 ? 'bg-primary-100' : 'bg-gray-100'}`}>
+            <div className={`flex items-center justify-center ${step === 2 ? 'text-primary-500 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400'}`}>
+              <span className={`flex items-center justify-center w-6 h-6 rounded-full mr-2 text-sm ${step === 2 ? 'bg-primary-100 dark:bg-primary-900/30' : 'bg-gray-100 dark:bg-gray-800'}`}>
                 2
               </span>
               <span className="font-medium text-sm">Ticket Types</span>
@@ -241,7 +233,7 @@ const CreateEventPage = () => {
               <div className="space-y-4">
                 {/* Event Name */}
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Event Name
                   </label>
                   <div className="relative">
@@ -251,17 +243,17 @@ const CreateEventPage = () => {
                       name="name"
                       value={eventData.name}
                       onChange={handleEventChange}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
                       placeholder="Enter event name"
                       required
                     />
-                    <BookOpen className="absolute right-3 top-2 h-4 w-4 text-gray-400" />
+                    <BookOpen className="absolute right-3 top-2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                   </div>
                 </div>
 
                 {/* Event Description */}
                 <div>
-                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Description
                   </label>
                   <textarea
@@ -270,7 +262,7 @@ const CreateEventPage = () => {
                     value={eventData.description}
                     onChange={handleEventChange}
                     rows={3}
-                    className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
                     placeholder="Tell people what your event is about..."
                     required
                   />
@@ -279,7 +271,7 @@ const CreateEventPage = () => {
                 {/* Date and Time */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="date" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Date
                     </label>
                     <input
@@ -288,12 +280,12 @@ const CreateEventPage = () => {
                       name="date"
                       value={eventData.date}
                       onChange={handleEventChange}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
                       required
                     />
                   </div>
                   <div>
-                    <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
+                    <label htmlFor="time" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                       Time
                     </label>
                     <input
@@ -302,7 +294,7 @@ const CreateEventPage = () => {
                       name="time"
                       value={eventData.time}
                       onChange={handleEventChange}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
                       required
                     />
                   </div>
@@ -310,7 +302,7 @@ const CreateEventPage = () => {
 
                 {/* Venue */}
                 <div>
-                  <label htmlFor="venue" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="venue" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Venue/Location
                   </label>
                   <div className="relative">
@@ -320,17 +312,17 @@ const CreateEventPage = () => {
                       name="venue"
                       value={eventData.venue}
                       onChange={handleEventChange}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                      className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
                       placeholder="Where is your event taking place?"
                       required
                     />
-                    <MapPin className="absolute right-3 top-2 h-4 w-4 text-gray-400" />
+                    <MapPin className="absolute right-3 top-2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                   </div>
                 </div>
 
                 {/* Category */}
                 <div>
-                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Category
                   </label>
                   <div className="relative">
@@ -339,7 +331,7 @@ const CreateEventPage = () => {
                       name="category"
                       value={eventData.category}
                       onChange={handleEventChange}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 appearance-none"
+                      className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 appearance-none"
                       required
                     >
                       <option value="">Select a category</option>
@@ -347,13 +339,13 @@ const CreateEventPage = () => {
                         <option key={category} value={category}>{category}</option>
                       ))}
                     </select>
-                    <Tag className="absolute right-3 top-2 h-4 w-4 text-gray-400" />
+                    <Tag className="absolute right-3 top-2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                   </div>
                 </div>
 
                 {/* Organizer */}
                 <div>
-                  <label htmlFor="organizer" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="organizer" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Organizer
                   </label>
                   <div className="relative">
@@ -363,14 +355,12 @@ const CreateEventPage = () => {
                       name="organizer"
                       value={eventData.organizer}
                       onChange={handleEventChange}
-                      className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-gray-100"
+                      className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                       readOnly
                     />
-                    <Building2 className="absolute right-3 top-2 h-4 w-4 text-gray-400" />
+                    <Building2 className="absolute right-3 top-2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                   </div>
                 </div>
-
-               
               </div>
 
               <div className="mt-8 flex justify-end">
@@ -400,17 +390,17 @@ const CreateEventPage = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <h2 className="text-lg font-bold mb-4">Ticket Types</h2>
-              <p className="text-gray-600 text-sm mb-4">
+              <h2 className="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">Ticket Types</h2>
+              <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
                 Add different ticket types for your event (e.g., Table of 8, VIP, Early Bird, etc.)
               </p>
 
               <div className="space-y-4">
                 {ticketTypes.map(ticket => (
-                  <div key={ticket.id} className="bg-gray-50 p-3 rounded-lg">
+                  <div key={ticket.id} className="bg-gray-50 dark:bg-gray-800 p-3 rounded-lg">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                       <div className="md:col-span-2">
-                        <label htmlFor={`ticket-name-${ticket.id}`} className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor={`ticket-name-${ticket.id}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           Ticket Name
                         </label>
                         <div className="relative">
@@ -419,15 +409,15 @@ const CreateEventPage = () => {
                             id={`ticket-name-${ticket.id}`}
                             value={ticket.name}
                             onChange={(e) => handleTicketChange(ticket.id, 'name', e.target.value)}
-                            className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                            className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                             placeholder="e.g., General Admission"
                             required
                           />
-                          <Ticket className="absolute right-3 top-2 h-4 w-4 text-gray-400" />
+                          <Ticket className="absolute right-3 top-2 h-4 w-4 text-gray-400 dark:text-gray-500" />
                         </div>
                       </div>
                       <div>
-                        <label htmlFor={`ticket-price-${ticket.id}`} className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor={`ticket-price-${ticket.id}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           Price (Frw)
                         </label>
                         <div className="relative">
@@ -437,14 +427,14 @@ const CreateEventPage = () => {
                             value={ticket.price}
                             onChange={(e) => handleTicketChange(ticket.id, 'price', e.target.value)}
                             min="0"
-                            className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                            className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                             required
                           />
-                          <span className="absolute right-3 top-2 text-gray-500 text-sm">Frw</span>
+                          <span className="absolute right-3 top-2 text-gray-500 dark:text-gray-400 text-sm">Frw</span>
                         </div>
                       </div>
                       <div>
-                        <label htmlFor={`ticket-stock-${ticket.id}`} className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor={`ticket-stock-${ticket.id}`} className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           Initial Stock
                         </label>
                         <div className="relative">
@@ -454,7 +444,7 @@ const CreateEventPage = () => {
                             value={ticket.initialStock}
                             onChange={(e) => handleTicketChange(ticket.id, 'initialStock', e.target.value)}
                             min="0"
-                            className="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500"
+                            className="w-full px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200"
                             required
                           />
                         </div>
@@ -465,7 +455,7 @@ const CreateEventPage = () => {
                         <button
                           type="button"
                           onClick={() => removeTicketType(ticket.id)}
-                          className="text-red-600 hover:text-red-800 flex items-center text-xs"
+                          className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 flex items-center text-xs"
                         >
                           <Trash2 className="h-3 w-3 mr-1" />
                           Remove
@@ -513,39 +503,44 @@ const CreateEventPage = () => {
           )}
         </form>
         {createdEventId && (
-  <div className="mt-8 border-t pt-6">
-    <h2 className="text-lg font-bold mb-2">Upload Event Image</h2>
+          <div className="mt-8 border-t pt-6 border-gray-200 dark:border-gray-700">
+            <h2 className="text-lg font-bold mb-2 text-gray-800 dark:text-gray-100">Upload Event Image</h2>
 
-    <div className="space-y-4">
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => {
-          if (e.target.files?.[0]) {
-            setEventData((prev) => ({ ...prev, image: e.target.files![0] }));
-          }
-        }}
-      />
+            <div className="space-y-4">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  if (e.target.files?.[0]) {
+                    setEventData((prev) => ({ ...prev, image: e.target.files![0] }));
+                  }
+                }}
+                className="block w-full text-sm text-gray-500 dark:text-gray-400
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-md file:border-0
+                  file:text-sm file:font-semibold
+                  file:bg-primary-50 dark:file:bg-primary-900/20 file:text-primary-700 dark:file:text-primary-400
+                  hover:file:bg-primary-100 dark:hover:file:bg-primary-900/30"
+              />
 
-      {eventData.image && (
-        <img
-          src={URL.createObjectURL(eventData.image)}
-          alt="Preview"
-          className="w-full h-48 object-cover rounded"
-        />
-      )}
+              {eventData.image && (
+                <img
+                  src={URL.createObjectURL(eventData.image)}
+                  alt="Preview"
+                  className="w-full h-48 object-cover rounded"
+                />
+              )}
 
-      <button
-        onClick={handleImageUpload}
-        className="btn-primary px-4 py-2"
-        disabled={!eventData.image}
-      >
-        Upload Image
-      </button>
-    </div>
-  </div>
-)}
-
+              <button
+                onClick={handleImageUpload}
+                className="btn-primary px-4 py-2"
+                disabled={!eventData.image}
+              >
+                Upload Image
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

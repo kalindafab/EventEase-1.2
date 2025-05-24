@@ -63,18 +63,18 @@ const AllEvent: React.FC = () => {
 
   return (
     <motion.div
-      className="p-6 max-w-7xl mx-auto"
+      className="p-6 max-w-7xl mx-auto bg-white dark:bg-gray-900"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      <h2 className="text-3xl font-bold text-purple-700 mb-6">All Events</h2>
+      <h2 className="text-3xl font-bold text-purple-700 dark:text-purple-400 mb-6">All Events</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {events.map((event) => (
           <motion.div
             key={event.id}
-            className="bg-white rounded-xl shadow-md overflow-hidden transition hover:shadow-lg"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-md dark:shadow-gray-700/50 overflow-hidden transition hover:shadow-lg dark:hover:shadow-gray-600/50"
             whileHover={{ scale: 1.02 }}
           >
             {event.imageUrl && (
@@ -85,38 +85,38 @@ const AllEvent: React.FC = () => {
               />
             )}
             <div className="p-4 space-y-2">
-              <h3 className="text-lg font-semibold text-purple-700">{event.name}</h3>
-              <p className="text-sm text-gray-600 line-clamp-2">{event.description}</p>
+              <h3 className="text-lg font-semibold text-purple-700 dark:text-purple-400">{event.name}</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2">{event.description}</p>
 
-              <div className="text-xs text-gray-500 space-y-1 mt-2">
+              <div className="text-xs text-gray-500 dark:text-gray-400 space-y-1 mt-2">
                 <div className="flex items-center gap-1">
-                  <Calendar className="w-4 h-4" /> {new Date(event.date).toDateString()}
+                  <Calendar className="w-4 h-4 text-gray-500 dark:text-gray-400" /> {new Date(event.date).toDateString()}
                 </div>
                 <div className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" /> {event.time}
+                  <Clock className="w-4 h-4 text-gray-500 dark:text-gray-400" /> {event.time}
                 </div>
                 <div className="flex items-center gap-1">
-                  <MapPin className="w-4 h-4" /> {event.venue}
+                  <MapPin className="w-4 h-4 text-gray-500 dark:text-gray-400" /> {event.venue}
                 </div>
                 <div className="flex items-center gap-1">
-                  <Users className="w-4 h-4" /> {event.organizerName}
+                  <Users className="w-4 h-4 text-gray-500 dark:text-gray-400" /> {event.organizerName}
                 </div>
               </div>
 
               <div className="flex items-center justify-between mt-3">
                 <button
                   onClick={() => toggleLike(event.id)}
-                  className="text-red-500 hover:text-red-600"
+                  className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300"
                 >
                   <Heart className={`w-5 h-5 ${likedEvents.has(event.id) ? 'fill-current' : ''}`} />
                 </button>
-               <button
-  onClick={() => navigate(`/buy-ticket/${event.id}`)}
-  className="flex items-center text-sm px-3 py-1 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
->
-  <CalendarPlus className="w-4 h-4 mr-1" />
-  Buy Ticket
-</button>
+                <button
+                  onClick={() => navigate(`/buy-ticket/${event.id}`)}
+                  className="flex items-center text-sm px-3 py-1 bg-purple-600 dark:bg-purple-700 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 transition"
+                >
+                  <CalendarPlus className="w-4 h-4 mr-1" />
+                  Buy Ticket
+                </button>
               </div>
             </div>
           </motion.div>

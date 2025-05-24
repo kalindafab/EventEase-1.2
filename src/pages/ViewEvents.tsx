@@ -69,13 +69,13 @@ const ViewEvents = () => {
     },
   };
 
-  if (loading) return <p>Loading events...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+  if (loading) return <p className="dark:text-gray-300">Loading events...</p>;
+  if (error) return <p className="text-red-500 dark:text-red-400">{error}</p>;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {events.length === 0 ? (
-        <p className="text-gray-600">No events found.</p>
+        <p className="text-gray-600 dark:text-gray-400">No events found.</p>
       ) : (
         events.map((event, index) => (
           <motion.div
@@ -87,42 +87,42 @@ const ViewEvents = () => {
             whileHover="hover"
             custom={index}
           >
-            <div className="bg-white rounded-xl overflow-hidden shadow-card h-full flex flex-col transition-all duration-300 group">
+            <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-card h-full flex flex-col transition-all duration-300 group">
               <div className="relative h-48 overflow-hidden">
                 <img
                   src={event.imagePath}
                   alt={event.name}
                   className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="absolute top-3 right-3 bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                <div className="absolute top-3 right-3 bg-primary-500 dark:bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full">
                   {event.category}
                 </div>
               </div>
 
               <div className="p-5 flex-grow flex flex-col">
                 <div className="flex-grow">
-                  <h3 className="text-xl font-semibold mb-2 line-clamp-2">{event.name}</h3>
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                  <h3 className="text-xl font-semibold mb-2 line-clamp-2 dark:text-white">{event.name}</h3>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4 line-clamp-2">
                     {event.description}
                   </p>
 
                   <div className="mt-4">
-                    <p className="text-sm font-semibold mb-1">Ticket Types:</p>
+                    <p className="text-sm font-semibold mb-1 dark:text-gray-200">Ticket Types:</p>
                     <button
                       onClick={() => fetchTicketTypes(event.id)}
-                      className="text-primary-500 text-sm underline mb-2"
+                      className="text-primary-500 dark:text-primary-400 text-sm underline mb-2"
                     >
                       Show Ticket Types
                     </button>
                     {ticketTypes[event.id] ? (
                       ticketTypes[event.id].length === 0 ? (
-                        <p className="text-sm text-gray-600">No ticket types available.</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">No ticket types available.</p>
                       ) : (
                         <ul className="space-y-1">
                           {ticketTypes[event.id].map((ticket) => (
                             <li
                               key={ticket.id}
-                              className="text-sm text-gray-600 flex justify-between"
+                              className="text-sm text-gray-600 dark:text-gray-300 flex justify-between"
                             >
                               <span>{ticket.name}</span>
                               <span>
@@ -133,14 +133,14 @@ const ViewEvents = () => {
                         </ul>
                       )
                     ) : (
-                      <p className="text-sm text-gray-600">Click to load ticket types.</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Click to load ticket types.</p>
                     )}
                   </div>
                 </div>
 
-                <div className="border-t border-gray-100 pt-4 mt-auto">
-                  <div className="flex items-center text-sm text-gray-500 mb-2">
-                    <Calendar className="h-4 w-4 mr-2 text-primary-500" />
+                <div className="border-t border-gray-100 dark:border-gray-700 pt-4 mt-auto">
+                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
+                    <Calendar className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
                     {new Date(event.date).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
@@ -153,8 +153,8 @@ const ViewEvents = () => {
                     })}
                   </div>
 
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin className="h-4 w-4 mr-2 text-primary-500" />
+                  <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                    <MapPin className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
                     {event.location}
                   </div>
                 </div>

@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
@@ -48,8 +47,8 @@ const PieChartDraggable: React.FC<Props> = ({ eventId }) => {
   }));
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white rounded-xl shadow-md">
-      <h2 className="text-2xl font-bold mb-4 text-purple-700">Ticket Type Distribution</h2>
+    <div className="max-w-md mx-auto p-4 bg-white dark:bg-gray-800 rounded-xl shadow-md">
+      <h2 className="text-2xl font-bold mb-4 text-purple-700 dark:text-purple-400">Ticket Type Distribution</h2>
       <PieChart width={350} height={300}>
         <Pie
           data={formattedData}
@@ -78,10 +77,10 @@ const PieChartDraggable: React.FC<Props> = ({ eventId }) => {
                       ref={provided.innerRef}
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
-                      className="flex justify-between items-center p-2 border rounded-md bg-purple-100"
+                      className="flex justify-between items-center p-2 border rounded-md bg-purple-100 dark:bg-purple-900/30 border-purple-200 dark:border-purple-800"
                     >
-                      <span>{item.ticketTypeName}</span>
-                      <span className="text-sm">{item.percentage}%</span>
+                      <span className="dark:text-gray-200">{item.ticketTypeName}</span>
+                      <span className="text-sm dark:text-purple-200">{item.percentage}%</span>
                     </li>
                   )}
                 </Draggable>

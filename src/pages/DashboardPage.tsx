@@ -26,7 +26,6 @@ const DashboardPage = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
@@ -46,20 +45,18 @@ const DashboardPage = () => {
 
   const upcomingEvents = searchTerm ? filteredEvents.slice(0, 3) : eventsData.slice(0, 3);
 
-  // Check if we're on a nested route (users/approvals)
+  // Check if we're on a nested route
   const isNestedRoute = location.pathname.includes('/dashboard/users') || 
                        location.pathname.includes('/dashboard/approvals') ||
                        location.pathname.includes('/dashboard/createEvents') ||
                        location.pathname.includes('/dashboard/attendees') ||
-
                        location.pathname.includes('/dashboard/view-my-events');
-
 
   // Show search results or default content
   const showSearchResults = searchTerm.trim() && !isNestedRoute;
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar - Mobile Overlay */}
       <AnimatePresence>
         {isSidebarOpen && (
@@ -100,11 +97,11 @@ const DashboardPage = () => {
             // Search Results View
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h2 className="text-xl font-semibold">
+                <h2 className="text-xl font-semibold dark:text-gray-100">
                   Search Results for "{searchTerm}"
                 </h2>
                 <button 
-                  className="text-sm text-gray-500 hover:text-gray-700"
+                  className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                   onClick={() => setSearchTerm('')}
                 >
                   Clear search
@@ -119,9 +116,9 @@ const DashboardPage = () => {
                 </div>
               ) : (
                 <div className="text-center py-12">
-                  <Search className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-lg font-medium text-gray-900">No results found</h3>
-                  <p className="mt-1 text-gray-500">
+                  <Search className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                  <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">No results found</h3>
+                  <p className="mt-1 text-gray-500 dark:text-gray-400">
                     Try searching with different keywords
                   </p>
                 </div>
@@ -132,7 +129,7 @@ const DashboardPage = () => {
             <>
               <div className="mb-6">
                 <motion.h1 
-                  className="text-2xl font-bold mb-1"
+                  className="text-2xl font-bold mb-1 dark:text-gray-100"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
@@ -140,7 +137,7 @@ const DashboardPage = () => {
                   Welcome back, Luvumbu
                 </motion.h1>
                 <motion.p 
-                  className="text-gray-600"
+                  className="text-gray-600 dark:text-gray-400"
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
@@ -159,37 +156,37 @@ const DashboardPage = () => {
                 <StatCard
                   title="Total Attendees"
                   value="1,248"
-                  icon={<Users size={24} className="text-primary-600" />}
+                  icon={<Users size={24} className="text-primary-600 dark:text-primary-400" />}
                   change={{ value: 12, isPositive: true }}
-                  bgColor="bg-primary-50"
-                  textColor="text-primary-900"
+                  bgColor="bg-primary-50 dark:bg-primary-900/20"
+                  textColor="text-primary-900 dark:text-primary-100"
                 />
                 
                 <StatCard
                   title="Upcoming Events"
                   value="8"
-                  icon={<Calendar size={24} className="text-indigo-600" />}
+                  icon={<Calendar size={24} className="text-indigo-600 dark:text-indigo-400" />}
                   change={{ value: 4, isPositive: true }}
-                  bgColor="bg-indigo-50"
-                  textColor="text-indigo-900"
+                  bgColor="bg-indigo-50 dark:bg-indigo-900/20"
+                  textColor="text-indigo-900 dark:text-indigo-100"
                 />
                 
                 <StatCard
                   title="Total Revenue"
                   value="8,000 Frw"
-                  icon={<CreditCard size={24} className="text-green-600" />}
+                  icon={<CreditCard size={24} className="text-green-600 dark:text-green-400" />}
                   change={{ value: 8, isPositive: true }}
-                  bgColor="bg-green-50"
-                  textColor="text-green-900"
+                  bgColor="bg-green-50 dark:bg-green-900/20"
+                  textColor="text-green-900 dark:text-green-100"
                 />
                 
                 <StatCard
                   title="Event Engagement"
                   value="82%"
-                  icon={<TrendingUp size={24} className="text-amber-600" />}
+                  icon={<TrendingUp size={24} className="text-amber-600 dark:text-amber-400" />}
                   change={{ value: 3, isPositive: false }}
-                  bgColor="bg-amber-50"
-                  textColor="text-amber-900"
+                  bgColor="bg-amber-50 dark:bg-amber-900/20"
+                  textColor="text-amber-900 dark:text-amber-100"
                 />
               </motion.div>
               
@@ -197,14 +194,14 @@ const DashboardPage = () => {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
                 {/* Activity Chart */}
                 <motion.div 
-                  className="lg:col-span-2 bg-white rounded-xl shadow-sm p-6"
+                  className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: 0.3 }}
                 >
                   <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg font-semibold">Activity Overview</h2>
-                    <select className="bg-gray-100 border-0 rounded-lg p-2 text-sm focus:outline-none">
+                    <h2 className="text-lg font-semibold dark:text-gray-100">Activity Overview</h2>
+                    <select className="bg-gray-100 dark:bg-gray-700 border-0 rounded-lg p-2 text-sm focus:outline-none dark:text-gray-200">
                       <option>Last 7 days</option>
                       <option>Last 30 days</option>
                       <option>Last 90 days</option>
@@ -214,41 +211,41 @@ const DashboardPage = () => {
                   <div className="flex gap-6 mb-4">
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm text-gray-500">Event Registrations</p>
-                        <span className="flex items-center text-sm font-medium text-green-600">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Event Registrations</p>
+                        <span className="flex items-center text-sm font-medium text-green-600 dark:text-green-400">
                           <ArrowUpRight className="h-4 w-4 mr-1" />
                           +28%
                         </span>
                       </div>
-                      <p className="text-2xl font-bold">482</p>
+                      <p className="text-2xl font-bold dark:text-gray-100">482</p>
                     </div>
                     
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm text-gray-500">Event Views</p>
-                        <span className="flex items-center text-sm font-medium text-red-600">
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Event Views</p>
+                        <span className="flex items-center text-sm font-medium text-red-600 dark:text-red-400">
                           <ArrowDownRight className="h-4 w-4 mr-1" />
                           -12%
                         </span>
                       </div>
-                      <p className="text-2xl font-bold">1,749</p>
+                      <p className="text-2xl font-bold dark:text-gray-100">1,749</p>
                     </div>
                   </div>
                   
                   {/* Simple Chart Mockup */}
                   <div className="h-60 mt-8">
-                    <div className="w-full h-full bg-gradient-to-t from-primary-100 to-transparent relative rounded-lg overflow-hidden">
+                    <div className="w-full h-full bg-gradient-to-t from-primary-100 dark:from-primary-900/30 to-transparent relative rounded-lg overflow-hidden">
                       {[...Array(7)].map((_, i) => (
                         <div key={i} className="absolute bottom-0 flex flex-col items-center" style={{ left: `${i * 15 + 5}%` }}>
                           <div 
-                            className="bg-primary-500 rounded-full w-2.5 h-2.5 mb-1"
+                            className="bg-primary-500 dark:bg-primary-400 rounded-full w-2.5 h-2.5 mb-1"
                             style={{ 
                               height: `${Math.floor(Math.random() * 60) + 20}%`,
                               width: '8px',
                               borderRadius: '4px' 
                             }}
                           ></div>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             {new Date(Date.now() - (6 - i) * 86400000).toLocaleDateString('en-US', { weekday: 'short' })}
                           </span>
                         </div>
@@ -264,8 +261,8 @@ const DashboardPage = () => {
                   transition={{ duration: 0.5, delay: 0.4 }}
                 >
                   <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-lg font-semibold">Upcoming Events</h2>
-                    <Link to="/dashboard/events" className="text-sm text-primary-600 hover:text-primary-700 transition-colors flex items-center">
+                    <h2 className="text-lg font-semibold dark:text-gray-100">Upcoming Events</h2>
+                    <Link to="/dashboard/events" className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors flex items-center">
                       View all <ChevronRight className="h-4 w-4" />
                     </Link>
                   </div>
@@ -280,64 +277,64 @@ const DashboardPage = () => {
               
               {/* Recent Activity */}
               <motion.div 
-                className="bg-white rounded-xl shadow-sm p-6"
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-6"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.5 }}
               >
                 <div className="flex justify-between items-center mb-6">
-                  <h2 className="text-lg font-semibold">Recent Activity</h2>
-                  <button className="text-sm text-primary-600 hover:text-primary-700 transition-colors">
+                  <h2 className="text-lg font-semibold dark:text-gray-100">Recent Activity</h2>
+                  <button className="text-sm text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">
                     View all
                   </button>
                 </div>
                 
                 <div className="space-y-4">
                   {/* Activity Item */}
-                  <div className="flex items-start pb-4 border-b border-gray-100">
-                    <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center mr-4">
-                      <Users className="h-5 w-5 text-green-600" />
+                  <div className="flex items-start pb-4 border-b border-gray-100 dark:border-gray-700">
+                    <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mr-4">
+                      <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">New Registration</p>
-                      <p className="text-sm text-gray-600">Luvumbu registered for "TechConnect Conference 2025"</p>
-                      <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
+                      <p className="text-sm font-medium dark:text-gray-100">New Registration</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Luvumbu registered for "TechConnect Conference 2025"</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">2 hours ago</p>
                     </div>
                   </div>
                   
                   {/* Activity Item */}
-                  <div className="flex items-start pb-4 border-b border-gray-100">
-                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center mr-4">
-                      <CreditCard className="h-5 w-5 text-blue-600" />
+                  <div className="flex items-start pb-4 border-b border-gray-100 dark:border-gray-700">
+                    <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mr-4">
+                      <CreditCard className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Payment Received</p>
-                      <p className="text-sm text-gray-600">You received 299 Frw for "Summer Music Festival" ticket</p>
-                      <p className="text-xs text-gray-500 mt-1">Yesterday</p>
+                      <p className="text-sm font-medium dark:text-gray-100">Payment Received</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">You received 299 Frw for "Summer Music Festival" ticket</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Yesterday</p>
                     </div>
                   </div>
                   
                   {/* Activity Item */}
-                  <div className="flex items-start pb-4 border-b border-gray-100">
-                    <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center mr-4">
-                      <Calendar className="h-5 w-5 text-amber-600" />
+                  <div className="flex items-start pb-4 border-b border-gray-100 dark:border-gray-700">
+                    <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mr-4">
+                      <Calendar className="h-5 w-5 text-amber-600 dark:text-amber-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Event Update</p>
-                      <p className="text-sm text-gray-600">You updated the details for "Photography Workshop"</p>
-                      <p className="text-xs text-gray-500 mt-1">2 days ago</p>
+                      <p className="text-sm font-medium dark:text-gray-100">Event Update</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">You updated the details for "Photography Workshop"</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">2 days ago</p>
                     </div>
                   </div>
                   
                   {/* Activity Item */}
                   <div className="flex items-start">
-                    <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center mr-4">
-                      <TrendingUp className="h-5 w-5 text-purple-600" />
+                    <div className="h-10 w-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mr-4">
+                      <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Milestone Reached</p>
-                      <p className="text-sm text-gray-600">"TechConnect Conference 2025" reached 1,000 registrations</p>
-                      <p className="text-xs text-gray-500 mt-1">3 days ago</p>
+                      <p className="text-sm font-medium dark:text-gray-100">Milestone Reached</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">"TechConnect Conference 2025" reached 1,000 registrations</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">3 days ago</p>
                     </div>
                   </div>
                 </div>

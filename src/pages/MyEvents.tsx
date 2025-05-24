@@ -54,15 +54,15 @@ const MyEvents: React.FC = () => {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="p-6 max-w-7xl mx-auto"
+      className="p-6 max-w-7xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100"
     >
-      <h2 className="text-3xl font-bold text-purple-700 mb-6">My Events</h2>
+      <h2 className="text-3xl font-bold text-purple-700 dark:text-purple-400 mb-6">My Events</h2>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {events.map((event) => (
           <motion.div
             key={event.id}
-            className="bg-white rounded-xl shadow-md p-4 space-y-4"
+            className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 space-y-4"
             whileHover={{ scale: 1.02 }}
           >
             {event.imageUrl && (
@@ -73,7 +73,9 @@ const MyEvents: React.FC = () => {
               />
             )}
 
-            <h3 className="text-lg font-semibold text-purple-700 text-center">{event.name}</h3>
+            <h3 className="text-lg font-semibold text-purple-700 dark:text-purple-400 text-center">
+              {event.name}
+            </h3>
 
             <div className="space-y-4">
               <LineGraph eventId={event.id} />

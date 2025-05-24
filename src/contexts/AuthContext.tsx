@@ -7,12 +7,13 @@ type User = {
   lastname: string;
   email: string;
   role: UserRole;
-  organization:string
+  organization: string;
   status: UserStatus;
   permissions: string[];
   accessToken?: string;
   refreshToken?: string;
   tokenExpiresAt?: number;
+  themePreference?: 'light' | 'dark' | 'system'; // Added theme preference
 };
 
 type AuthContextType = {
@@ -20,11 +21,13 @@ type AuthContextType = {
   token: string | null;
   isAuthenticated: boolean;
   isApproved: boolean;
+  theme: 'light' | 'dark'; // Current active theme
   hasPermission: (permission: string | string[]) => boolean;
   hasRole: (role: UserRole | UserRole[]) => boolean;
   login: (userData: User, token: string) => void;
   logout: () => void;
   refreshToken: () => Promise<void>;
+  setTheme: (theme: 'light' | 'dark' | 'system') => void; // Added theme setter
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,6 +37,35 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user: User | null;
     token: string | null;
   }>({ user: null, token: null });
+
+  const [theme, setThemeState] = useState<'light' | 'dark'>(() => {
+    // Check for saved theme preference or use system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      return savedTheme;
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  });
+
+  // Apply theme to document
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    localStorage.setItem('theme', theme);
+    
+    // If user is logged in and theme preference differs, we could update it on the server
+    if (authState.user && authState.user.themePreference !== theme) {
+      // Optional: Sync with user preferences on server
+    }
+  }, [theme, authState.user]);
+
+  const setTheme = (newTheme: 'light' | 'dark' | 'system') => {
+    if (newTheme === 'system') {
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      setThemeState(systemTheme);
+    } else {
+      setThemeState(newTheme);
+    }
+  };
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -45,6 +77,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           // Check if token is still valid
           if (!expiresAt || expiresAt > Date.now()) {
             setAuthState({ user, token });
+            // Apply user's theme preference if available
+            if (user?.themePreference) {
+              setTheme(user.themePreference);
+            }
           } else {
             await handleTokenRefresh();
           }
@@ -75,6 +111,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const { user, token, expiresAt } = await response.json();
       setAuthState({ user, token });
       localStorage.setItem('auth', JSON.stringify({ user, token, expiresAt }));
+      
+      // Apply user's theme preference if available
+      if (user?.themePreference) {
+        setTheme(user.themePreference);
+      }
     } catch (error) {
       console.error('Token refresh error:', error);
       logout();
@@ -107,12 +148,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
     setAuthState({ user: userData, token });
     localStorage.setItem('auth', JSON.stringify(authData));
+    
+    // Apply user's theme preference if available
+    if (userData.themePreference) {
+      setTheme(userData.themePreference);
+    }
   };
 
   const logout = () => {
-    // Optional: Make API call to invalidate tokens
     setAuthState({ user: null, token: null });
     localStorage.removeItem('auth');
+    // Don't reset theme on logout - keep user's UI preference
   };
 
   const value = {
@@ -120,11 +166,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     token: authState.token,
     isAuthenticated: !!authState.user,
     isApproved: authState.user?.status === 'approved',
+    theme,
     hasPermission,
     hasRole,
     login,
     logout,
     refreshToken: handleTokenRefresh,
+    setTheme,
   };
 
   return (

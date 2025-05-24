@@ -15,16 +15,16 @@ const AttendeesPage = () => {
     : sampleAttendees.filter(a => a.ticketType === filter);
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Event Attendees</h2>
+    <div className="p-6 bg-white dark:bg-gray-900">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">Event Attendees</h2>
       
       <div className="mb-4">
-        <label htmlFor="filter" className="mr-2">Filter by Ticket Type:</label>
+        <label htmlFor="filter" className="mr-2 text-gray-700 dark:text-gray-300">Filter by Ticket Type:</label>
         <select
           id="filter"
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-1"
+          className="border border-gray-300 dark:border-gray-600 rounded px-3 py-1 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200"
         >
           <option value="All">All</option>
           <option value="Regular">Regular</option>
@@ -33,20 +33,20 @@ const AttendeesPage = () => {
         </select>
       </div>
 
-      <table className="w-full table-auto border-collapse border border-gray-200">
+      <table className="w-full table-auto border-collapse border border-gray-200 dark:border-gray-700">
         <thead>
-          <tr className="bg-gray-100">
-            <th className="border p-2">Name</th>
-            <th className="border p-2">Email</th>
-            <th className="border p-2">Ticket Type</th>
+          <tr className="bg-gray-100 dark:bg-gray-800">
+            <th className="border p-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200">Name</th>
+            <th className="border p-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200">Email</th>
+            <th className="border p-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-200">Ticket Type</th>
           </tr>
         </thead>
         <tbody>
           {filteredAttendees.map((attendee, index) => (
-            <tr key={index}>
-              <td className="border p-2">{attendee.name}</td>
-              <td className="border p-2">{attendee.email}</td>
-              <td className="border p-2">{attendee.ticketType}</td>
+            <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-800/50">
+              <td className="border p-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300">{attendee.name}</td>
+              <td className="border p-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300">{attendee.email}</td>
+              <td className="border p-2 border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300">{attendee.ticketType}</td>
             </tr>
           ))}
         </tbody>
