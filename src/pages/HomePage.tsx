@@ -31,7 +31,7 @@ const HomePage = () => {
   const navigate = useNavigate();
   
   const handleEventClick = (eventId: string) => {
-    navigate(`/events/${eventId}`);
+    navigate(`/event/${eventId}`);
   };
 
   useEffect(() => {

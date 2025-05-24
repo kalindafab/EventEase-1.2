@@ -64,7 +64,7 @@ const EventDetailsPage = () => {
   }, [id]);
   
   const handleBuyTicket = () => {
-    navigate(`/events/${id}/tickets`);
+    navigate(`/event/${id}/tickets`);
   };
 
   if (loading) {

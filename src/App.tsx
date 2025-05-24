@@ -14,7 +14,7 @@ import CreateEventPage from './pages/CreateEventPage';
 
 
 import ViewEvents from './pages/ViewEvents';
-import AllEvents from './pages/AllEvents';
+import TicketSelectionPage from './pages/TicketSelectionPage';
 import BuyTicket from './pages/BuyTicket';
 import AttendeesPage from './pages/AttendeesPage';
 
@@ -32,6 +32,7 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="event/:id" element={<EventDetailsPage />} />
             <Route path="buy-ticket/:eventId" element={<BuyTicket />} />
+            <Route path="/event/:id/tickets" element={<TicketSelectionPage />} />
             
             {/* Auth routes */}
             <Route path="/Signup" element={<Signup />} />
