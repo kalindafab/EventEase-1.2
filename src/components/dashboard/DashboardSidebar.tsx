@@ -28,8 +28,8 @@ const SidebarItem = ({ icon, text, to, isActive, onClick }: SidebarItemProps) =>
     <motion.div 
       className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
         isActive 
-          ? 'bg-primary-100 text-primary-700' 
-          : 'text-gray-600 hover:bg-gray-100'
+          ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400' 
+          : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
       }`}
       whileHover={{ x: 4 }}
       whileTap={{ scale: 0.95 }}
@@ -40,7 +40,7 @@ const SidebarItem = ({ icon, text, to, isActive, onClick }: SidebarItemProps) =>
       <span className="font-medium">{text}</span>
       {isActive && (
         <motion.div 
-          className="ml-auto w-1.5 h-5 bg-primary-500 rounded-full"
+          className="ml-auto w-1.5 h-5 bg-primary-500 dark:bg-primary-400 rounded-full"
           layoutId="sidebar-indicator"
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         />
@@ -144,9 +144,7 @@ const DashboardSidebar = () => {
     { 
       icon: <Calendar className="h-5 w-5" />, 
       text: 'My Events', 
-
       to: '/dashboard/view-my-events',
-
       permission: 'CanViewOwnEvents',
       role: 'manager'
     },
@@ -174,7 +172,6 @@ const DashboardSidebar = () => {
       role: 'client'
     },
 
-
     // Logout (all roles)
     { 
       icon: <LogOut className="h-5 w-5" />, 
@@ -183,15 +180,17 @@ const DashboardSidebar = () => {
       permission: 'CanManageProfile'
     }
   ];
-const filteredItems = navItems.filter(item => {
-  return item.permission ? hasPermission(item.permission) : true;
-});
+
+  const filteredItems = navItems.filter(item => {
+    return item.permission ? hasPermission(item.permission) : true;
+  });
+
   return (
-    <div className="h-full flex flex-col bg-white border-r border-gray-200">
+    <div className="h-full flex flex-col bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-colors">
       <div className="p-6">
         <Link to="/" className="flex items-center space-x-2">
-          <Calendar className="h-7 w-7 text-primary-500" />
-          <span className="text-xl font-bold text-primary-800">EventEase 1.2</span>
+          <Calendar className="h-7 w-7 text-primary-500 dark:text-primary-400" />
+          <span className="text-xl font-bold text-primary-800 dark:text-primary-300">EventEase 1.2</span>
         </Link>
       </div>
       
@@ -211,18 +210,18 @@ const filteredItems = navItems.filter(item => {
       </div>
 
       {user && (
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-              <span className="font-medium text-gray-700">
+            <div className="h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center transition-colors">
+              <span className="font-medium text-gray-700 dark:text-gray-300">
                 {user.firstname?.charAt(0)?.toUpperCase() || 'U'}
               </span>
             </div>
             <div>
-              <p className="font-medium text-gray-900 truncate max-w-[160px]">
+              <p className="font-medium text-gray-900 dark:text-gray-100 truncate max-w-[160px]">
                 {user.firstname || 'User'}
               </p>
-              <p className="text-xs text-gray-500 capitalize">
+              <p className="text-xs text-gray-500 dark:text-gray-400 capitalize">
                 {user.role || 'Unknown role'}
               </p>
             </div>

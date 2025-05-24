@@ -41,27 +41,27 @@ const EventCard = ({ event, index }: EventCardProps) => {
       custom={index}
     >
       <Link to={`/event/${event.id}`} className="block h-full">
-        <div className="bg-white rounded-xl overflow-hidden shadow-card h-full flex flex-col transition-all duration-300">
+        <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden shadow-card dark:shadow-gray-700/50 h-full flex flex-col transition-all duration-300 border border-gray-100 dark:border-gray-700">
           <div className="relative h-48 overflow-hidden">
             <img 
               src={event.image} 
               alt={event.title} 
               className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <div className="absolute top-3 right-3 bg-primary-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+            <div className="absolute top-3 right-3 bg-primary-500 dark:bg-primary-600 text-white text-xs font-bold px-3 py-1 rounded-full">
               {event.category}
             </div>
           </div>
           
           <div className="p-5 flex-grow flex flex-col">
             <div className="flex-grow">
-              <h3 className="text-xl font-semibold mb-2 line-clamp-2">{event.title}</h3>
-              <p className="text-gray-600 text-sm mb-4 line-clamp-2">{event.shortDescription}</p>
+              <h3 className="text-xl font-semibold mb-2 line-clamp-2 dark:text-white">{event.title}</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-2">{event.shortDescription}</p>
             </div>
             
-            <div className="border-t border-gray-100 pt-4 mt-auto">
-              <div className="flex items-center text-sm text-gray-500 mb-2">
-                <Calendar className="h-4 w-4 mr-2 text-primary-500" />
+            <div className="border-t border-gray-100 dark:border-gray-700 pt-4 mt-auto">
+              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
+                <Calendar className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
                 {new Date(event.date).toLocaleDateString('en-US', { 
                   month: 'short',
                   day: 'numeric', 
@@ -69,17 +69,17 @@ const EventCard = ({ event, index }: EventCardProps) => {
                 })}
               </div>
               
-              <div className="flex items-center text-sm text-gray-500 mb-2">
-                <MapPin className="h-4 w-4 mr-2 text-primary-500" />
+              <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-2">
+                <MapPin className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
                 {event.location.split(',')[0]}
               </div>
               
               <div className="flex items-center justify-between mt-4">
-                <div className="flex items-center text-sm text-gray-500">
-                  <Users className="h-4 w-4 mr-2 text-primary-500" />
+                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                  <Users className="h-4 w-4 mr-2 text-primary-500 dark:text-primary-400" />
                   {event.attendees} attending
                 </div>
-                <div className="text-primary-600 font-semibold">
+                <div className="text-primary-600 dark:text-primary-400 font-semibold">
                   {event.price === 0 ? 'Free' : ` ${event.price} Frw`}
                 </div>
               </div>
