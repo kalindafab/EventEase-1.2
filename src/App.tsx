@@ -16,6 +16,7 @@ import CreateEventPage from './pages/CreateEventPage';
 import ViewEvents from './pages/ViewEvents';
 import AllEvents from './pages/AllEvents';
 import BuyTicket from './pages/BuyTicket';
+import PendingApproval from './components/auth/PendingApproval';
 
 
 
@@ -36,6 +37,9 @@ function App() {
             <Route path="/Signup" element={<Signup />} />
             <Route path="/Login" element={<Login />} />
             <Route path="/otpchecking" element={<Otpcheck/>} />
+            <Route path="/pending-approval" element={<PendingApproval />} />
+
+            {/* 404 Not Found */}
             
             {/* Dashboard routes - uses DashboardPage layout */}
             <Route path="dashboard" element={<DashboardPage />}>

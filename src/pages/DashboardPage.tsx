@@ -16,8 +16,10 @@ import DashboardHeader from '../components/dashboard/DashboardHeader';
 import UpcomingEventCard from '../components/dashboard/UpcomingEventCard';
 import StatCard from '../components/dashboard/StatCard';
 import { eventsData } from '../data/eventsData';
+import { useAuth } from '../contexts/AuthContext';
 
 const DashboardPage = () => {
+  const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const location = useLocation();
@@ -137,7 +139,7 @@ const DashboardPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3 }}
                 >
-                  Welcome back, Luvumbu
+                  Welcome back, {user ? `${user.firstname} ${user.lastname}` : 'Guest'}
                 </motion.h1>
                 <motion.p 
                   className="text-gray-600"
