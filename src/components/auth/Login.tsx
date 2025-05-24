@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import image from '../../assets/favicon.svg';
@@ -25,7 +26,13 @@ const Login = () => {
 
       if (!res.ok) {
         const errorData = await res.json();
-        throw new Error(errorData.message || 'Invalid email or password');
+        const errorMessage = errorData.message || 'Invalid email or password';
+        // Check for pending manager error and navigate to PendingApproval page
+        if (errorMessage === 'Manager account is pending approval.') {
+          navigate('/pending-approval');
+          return;
+        }
+        throw new Error(errorMessage);
       }
 
       await res.json(); // We assume success — no need to use this response now.

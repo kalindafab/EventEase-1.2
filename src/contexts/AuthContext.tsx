@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { UserRole, UserStatus } from '../types/user';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 
 type User = {
   id: string;
@@ -34,6 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     user: User | null;
     token: string | null;
   }>({ user: null, token: null });
+  const navigate = useNavigate();
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -113,6 +116,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Optional: Make API call to invalidate tokens
     setAuthState({ user: null, token: null });
     localStorage.removeItem('auth');
+    navigate('/login');
+    toast.success('Logged out successfully');
+    localStorage.removeItem('auth');
+    navigate('/login');
+    toast.success('Logged out successfully');
   };
 
   const value = {

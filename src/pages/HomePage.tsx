@@ -317,7 +317,10 @@ const HomePage = () => {
                     isFeatured: event.isFeatured || false,
                     attendees: event.attendees || 0,
                     price: event.price || 0,
-                    organizer: event.organizerName
+                    organizer: {
+                      name: event.organizerName || 'Unknown',
+                      logo: event.imageUrl || 'https://via.placeholder.com/50'
+                    }
                   }}
                   index={index} 
                 />

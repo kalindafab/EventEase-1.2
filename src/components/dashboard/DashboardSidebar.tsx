@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -69,15 +69,25 @@ interface NavItem {
 
 const DashboardSidebar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { user, hasPermission, logout } = useAuth();
 
   const handleLogout = async () => {
     try {
+      const storedAuth = localStorage.getItem('auth');
+      if (!storedAuth) {
+        throw new Error('No authentication data available');
+      }
+
+      const authData = JSON.parse(storedAuth);
+      const token = authData.token;
+      if (!token) {
+        throw new Error('No token available');
+      }
+      console.log('Token:', token);
       const response = await fetch('http://localhost:5297/api/users/logout', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
@@ -86,10 +96,8 @@ const DashboardSidebar = () => {
         throw new Error('Logout failed');
       }
 
-      logout();
-      localStorage.removeItem('token');
-      navigate('/login');
-      toast.success('Logged out successfully');
+      logout(); // Clear AuthContext state and localStorage
+      
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Logout failed');
     }
