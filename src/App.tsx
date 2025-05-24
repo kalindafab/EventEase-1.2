@@ -14,9 +14,10 @@ import CreateEventPage from './pages/CreateEventPage';
 
 
 import ViewEvents from './pages/ViewEvents';
-import AllEvents from './pages/AllEvents';
+import TicketSelectionPage from './pages/TicketSelectionPage';
 import BuyTicket from './pages/BuyTicket';
 import PendingApproval from './components/auth/PendingApproval';
+import AttendeesPage from './pages/AttendeesPage';
 
 
 
@@ -32,6 +33,7 @@ function App() {
             <Route index element={<HomePage />} />
             <Route path="event/:id" element={<EventDetailsPage />} />
             <Route path="buy-ticket/:eventId" element={<BuyTicket />} />
+            <Route path="/event/:id/tickets" element={<TicketSelectionPage />} />
             
             {/* Auth routes */}
             <Route path="/Signup" element={<Signup />} />
@@ -48,7 +50,7 @@ function App() {
               <Route path="approvals" element={<ManagerApprovals />} />
               {/* manager sections */}
               <Route path="createEvents" element={<CreateEventPage />} />
-              <Route path="attendees" element={<AllEvents/>} />
+              <Route path="attendees" element={<AttendeesPage/>} />
 
               <Route path="view-my-events" element={<ViewEvents/>} />
               {/* <Route path="AllEvents" element={<AllEvents/>} /> */}

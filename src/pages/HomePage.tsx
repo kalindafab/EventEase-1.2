@@ -1,47 +1,101 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Zap, Users } from 'lucide-react';
-import { Link } from 'react-router-dom';
-import { eventsData, Event } from '../data/eventsData';
+import { Link, useNavigate } from 'react-router-dom';
 import EventCard from '../components/events/EventCard';
 import SearchBar from '../components/ui/SearchBar';
 import CategoryFilter from '../components/ui/CategoryFilter';
 
+interface ApiEvent {
+  id: string;
+  name: string;
+  description: string;
+  date: string;
+  time: string;
+  venue: string;
+  category: string;
+  organizerName: string;
+  imageUrl?: string;
+  isFeatured?: boolean;
+  attendees?: number;
+  price?: number;
+}
+
 const HomePage = () => {
-  const [events, setEvents] = useState<Event[]>(eventsData);
-  const [featuredEvent, setFeaturedEvent] = useState<Event | null>(null);
+  const [apiEvents, setApiEvents] = useState<ApiEvent[]>([]);
+  const [featuredEvent, setFeaturedEvent] = useState<ApiEvent | null>(null);
   const [activeCategory, setActiveCategory] = useState('All');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
   
-  const categories = Array.from(new Set(eventsData.map(event => event.category)));
-  
+  const handleEventClick = (eventId: string) => {
+    navigate(`/event/${eventId}`);
+  };
+
   useEffect(() => {
-    // Find a featured event
-    const featured = eventsData.find(event => event.isFeatured);
-    if (featured) {
-      setFeaturedEvent(featured);
-    }
-    
-    // Filter events based on category
-    if (activeCategory === 'All') {
-      setEvents(eventsData);
-    } else {
-      setEvents(eventsData.filter(event => event.category === activeCategory));
-    }
-  }, [activeCategory]);
-  
+    const fetchAllEvents = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        
+        const response = await axios.get<ApiEvent[]>('http://localhost:5297/api/Event/allEvents');
+        const withImages = await Promise.all(response.data.map(async (event) => {
+          try {
+            const imgRes = await axios.get(`http://localhost:5297/api/Event/get-image/${event.id}`, {
+              responseType: 'blob'
+            });
+            const imageUrl = URL.createObjectURL(imgRes.data);
+            return { ...event, imageUrl };
+          } catch {
+            return event;
+          }
+        }));
+        
+        setApiEvents(withImages);
+        
+        const featured = withImages.find(event => event.isFeatured) || withImages[0];
+        if (featured) {
+          setFeaturedEvent(featured);
+        }
+      } catch (err) {
+        setError('Failed to fetch events');
+        console.error('Failed to fetch events:', err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchAllEvents();
+  }, []);
+
+  const categories = ['All', ...Array.from(new Set(apiEvents.map(event => event.category)))];
+
+  const getFilteredEvents = () => {
+    return apiEvents
+      .filter(event => activeCategory === 'All' || event.category === activeCategory)
+      .map(event => ({
+        ...event,
+        shortDescription: event.description.length > 100 
+          ? event.description.substring(0, 100) + '...' 
+          : event.description
+      }));
+  };
+
   const handleSearch = (query: string, location: string, date: string) => {
-    let filtered = [...eventsData];
+    let filtered = [...apiEvents];
     
     if (query) {
       filtered = filtered.filter(event => 
-        event.title.toLowerCase().includes(query.toLowerCase()) ||
+        event.name.toLowerCase().includes(query.toLowerCase()) ||
         event.description.toLowerCase().includes(query.toLowerCase())
       );
     }
     
     if (location) {
       filtered = filtered.filter(event => 
-        event.location.toLowerCase().includes(location.toLowerCase())
+        event.venue.toLowerCase().includes(location.toLowerCase())
       );
     }
     
@@ -51,7 +105,7 @@ const HomePage = () => {
       );
     }
     
-    setEvents(filtered);
+    setApiEvents(filtered);
   };
 
   const containerVariants = {
@@ -63,7 +117,25 @@ const HomePage = () => {
       }
     }
   };
-  
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-red-500 text-lg">{error}</div>
+      </div>
+    );
+  }
+
+  const filteredEvents = getFilteredEvents();
+
   return (
     <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
       {/* Hero Section */}
@@ -113,18 +185,23 @@ const HomePage = () => {
       {featuredEvent && (
         <section className="py-12 md:py-16 bg-gray-50 dark:bg-gray-800">
           <div className="container-custom">
-            <div className="flex flex-col md:flex-row gap-8 overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-lg">
+            <div 
+              className="flex flex-col md:flex-row gap-8 overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-lg cursor-pointer"
+              onClick={() => handleEventClick(featuredEvent.id)}
+            >
               <motion.div 
                 className="md:w-1/2"
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
               >
-                <img 
-                  src={featuredEvent.image} 
-                  alt={featuredEvent.title} 
-                  className="w-full h-64 md:h-full object-cover"
-                />
+                {featuredEvent.imageUrl && (
+                  <img 
+                    src={featuredEvent.imageUrl} 
+                    alt={featuredEvent.name} 
+                    className="w-full h-64 md:h-full object-cover"
+                  />
+                )}
               </motion.div>
               
               <motion.div 
@@ -140,9 +217,15 @@ const HomePage = () => {
                   </span>
                 </div>
                 
-                <h2 className="text-2xl md:text-3xl font-bold mb-4 dark:text-white">{featuredEvent.title}</h2>
+                <h2 className="text-2xl md:text-3xl font-bold mb-4 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  {featuredEvent.name}
+                </h2>
                 
-                <p className="text-gray-600 dark:text-gray-300 mb-6">{featuredEvent.shortDescription}</p>
+                <p className="text-gray-600 dark:text-gray-300 mb-6">
+                  {featuredEvent.description.length > 150 
+                    ? featuredEvent.description.substring(0, 150) + '...' 
+                    : featuredEvent.description}
+                </p>
                 
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center text-gray-600 dark:text-gray-300">
@@ -157,12 +240,12 @@ const HomePage = () => {
                   
                   <div className="flex items-center text-gray-600 dark:text-gray-300">
                     <MapPin className="h-5 w-5 mr-3 text-primary-500 dark:text-primary-400" />
-                    {featuredEvent.location}
+                    {featuredEvent.venue}
                   </div>
                   
                   <div className="flex items-center text-gray-600 dark:text-gray-300">
                     <Users className="h-5 w-5 mr-3 text-primary-500 dark:text-primary-400" />
-                    {featuredEvent.attendees} people attending
+                    {featuredEvent.attendees || 0} people attending
                   </div>
                 </div>
                 
@@ -171,12 +254,15 @@ const HomePage = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
-                    <Link 
-                      to={`/event/${featuredEvent.id}`} 
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEventClick(featuredEvent.id);
+                      }}
                       className="btn-primary w-full md:w-auto flex justify-center"
                     >
                       View Details
-                    </Link>
+                    </button>
                   </motion.div>
                 </div>
               </motion.div>
@@ -211,12 +297,35 @@ const HomePage = () => {
             initial="hidden"
             animate="visible"
           >
-            {events.map((event, index) => (
-              <EventCard key={event.id} event={event} index={index} />
+            {filteredEvents.map((event, index) => (
+              <div 
+                key={event.id}
+                onClick={() => handleEventClick(event.id)}
+                className="cursor-pointer"
+              >
+                <EventCard 
+                  event={{
+                    id: event.id,
+                    title: event.name,
+                    description: event.description,
+                    shortDescription: event.shortDescription,
+                    date: event.date,
+                    time: event.time,
+                    location: event.venue,
+                    category: event.category,
+                    image: event.imageUrl || 'https://via.placeholder.com/400x200',
+                    isFeatured: event.isFeatured || false,
+                    attendees: event.attendees || 0,
+                    price: event.price || 0,
+                    organizer: event.organizerName
+                  }}
+                  index={index} 
+                />
+              </div>
             ))}
           </motion.div>
           
-          {events.length === 0 && (
+          {filteredEvents.length === 0 && (
             <div className="text-center py-12">
               <p className="text-gray-500 dark:text-gray-400 text-lg">No events found matching your criteria.</p>
             </div>
